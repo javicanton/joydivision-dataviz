@@ -5,7 +5,7 @@
 Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el primer disco de Joy Division, en tres tiempos:
 
 1. **Portada.** Titular, subtítulo y la portada original del disco (`assets/cover.jpg`; diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.).
-2. **Scrollytelling.** Empieza con el púlsar CP 1919 (una línea que late con su periodo real, 1,3373 s) y el gráfico de Harold D. Craft Jr. de 1970 y la tesis de Harold D. Craft Jr. (1970), con las imágenes del reportaje de Jen Christiansen en *Scientific American* (`assets/sa/`, usadas con su permiso). Hay un hueco opcional para una foto de Bell Burnell (`assets/bell-radiotelescopio.jpg`). Después la portada se transforma en el disco entero (39 minutos) dibujado en 80 líneas de unos 30 segundos, que después se reordenan en las diez canciones; el texto recorre la historia del disco mientras el gráfico cambia.
+2. **Scrollytelling.** Empieza con el púlsar CP 1919 (una línea que late con su periodo real, 1,3373 s) y el gráfico de Harold D. Craft Jr. de 1970 y la tesis de Harold D. Craft Jr. (1970), con las imágenes del reportaje de Jen Christiansen en *Scientific American* (`assets/sa/`, usadas con su permiso). Hay un hueco opcional para una foto de Bell Burnell (`assets/bell-radiotelescopio.jpg`). Después aparece la portada, que se amplía y se funde con las diez líneas del disco; el texto recorre la historia del disco mientras el gráfico cambia.
 3. **Reproductor.** Al final, el gráfico funciona como reproductor del disco, con un vúmetro en la línea que suena.
 
 - **Diez líneas, diez canciones.** Cada línea es una canción, en el orden del disco (cara *Outside* arriba, *Inside* abajo). Como en la portada, es plana a los lados y en el centro se levanta la canción: primero su forma de onda y, para compararlas, sonoridad, brillo, graves o pulso. Con los botones de atributo se dibuja junto a cada línea, como una barra, un valor de ReccoBeats (energía, valencia, bailabilidad, instrumentalidad o acústica) para comparar las canciones. La parte central puede tener la misma anchura para todas o la duración real.
@@ -16,7 +16,7 @@ Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el prim
 
 | Archivo | Qué contiene | Cómo se genera |
 |---|---|---|
-| `data/unknown-pleasures.json` | Canciones, forma de onda y perfiles (400 puntos por dato), el disco en 80 líneas (portada), atributos de ReccoBeats, identificadores de Spotify | `scripts/build_data.py` |
+| `data/unknown-pleasures.json` | Canciones, forma de onda y perfiles (400 puntos por dato), atributos de ReccoBeats, identificadores de Spotify | `scripts/build_data.py` |
 | `data/vu/NN.bin.gz` | Espectro para el vúmetro: 30 fotogramas por segundo, 128 bandas mel de 30 Hz a 16 kHz, un byte por banda, con gzip (el navegador lo descomprime) | `scripts/analyze_audio.py` |
 | `data/reccobeats-features.csv` | Atributos sonoros (energía, valencia, instrumentalidad...) de la edición 2019 Digital Master | `scripts/build_data.py` |
 | `data-raw/` | Datos intermedios: perfiles del audio y respuesta de ReccoBeats | `analyze_audio.py`, `fetch_reccobeats.py` |

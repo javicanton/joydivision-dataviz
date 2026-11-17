@@ -38,8 +38,6 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 .src-fig { margin: 22px 0 0; }
 .src-fig img { display: block; max-width: 100%; height: auto; margin-bottom: 8px; }
 .src-fig figcaption { font-family: var(--font); font-size: 12px; line-height: 1.5; color: var(--dim); }
-.album80 path { fill: none; stroke: var(--fg); stroke-width: .9; }
-.album80 path.f { fill: var(--bg); stroke: none; }
 
 /* ---------- Scrollytelling: gráfico fijo a la izquierda, texto a la derecha ---------- */
 .scrolly { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 4vw; max-width: 1320px; margin: 0 auto; padding: 0 3vw; }
