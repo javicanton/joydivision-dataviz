@@ -1,0 +1,120 @@
+:root {
+  --bg: #000;
+  --fg: #f2f2f2;
+  --dim: #808080;
+  --faint: #2b2b2b;
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); }
+body { -webkit-font-smoothing: antialiased; }
+a { color: var(--fg); }
+button { font-family: inherit; }
+
+/* Idioma */
+.lang { position: fixed; top: 14px; right: 16px; z-index: 30; display: flex; border: 1px solid var(--faint); background: var(--bg); }
+.lang button, .seg button {
+  background: none; border: 0; color: var(--dim); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  padding: 5px 9px; cursor: pointer;
+}
+.lang button + button, .seg button + button { border-left: 1px solid var(--faint); }
+.lang button[aria-pressed="true"], .seg button[aria-pressed="true"] { color: var(--fg); }
+button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
+
+/* ---------- Scrollytelling: gráfico fijo a la izquierda, texto a la derecha ---------- */
+.scrolly { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 4vw; max-width: 1320px; margin: 0 auto; padding: 0 3vw; }
+.fig { position: sticky; top: 0; height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; }
+#viz { display: block; width: 100%; height: auto; max-height: calc(100vh - 140px); overflow: visible; }
+figcaption { margin-top: 10px; }
+.controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.seg { display: flex; border: 1px solid var(--faint); }
+.caption { min-height: 2.8em; margin: 12px auto 0; max-width: 560px; text-align: center; font-size: 12px; line-height: 1.5; letter-spacing: .04em; color: var(--dim); }
+.caption b { color: var(--fg); font-weight: 400; }
+
+.steps { padding: 30vh 0 40vh; }
+.step { min-height: 92vh; display: flex; align-items: center; opacity: .28; transition: opacity .4s; }
+.step.active { opacity: 1; }
+.step .card { max-width: 440px; }
+.step h1 { font-weight: 400; font-size: clamp(34px, 4.4vw, 58px); letter-spacing: .1em; text-transform: uppercase; line-height: 1.05; margin: 0 0 22px; }
+.step h2 { font-weight: 400; font-size: 13px; letter-spacing: .28em; text-transform: uppercase; margin: 0 0 18px; }
+.step p { font-family: var(--serif); font-size: 17.5px; line-height: 1.6; margin: 0 0 16px; color: #d9d9d9; }
+.step p b { color: var(--fg); font-weight: 600; }
+.step .kicker { font-family: var(--font); font-size: 12px; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); margin-bottom: 14px; }
+.step .lead { font-size: 20px; color: var(--fg); }
+.step .note, .note { font-family: var(--font); font-size: 12px; line-height: 1.5; color: var(--dim); }
+.btn {
+  background: var(--fg); color: var(--bg); border: 0; padding: 11px 18px; font-size: 12px; letter-spacing: .18em;
+  text-transform: uppercase; cursor: pointer;
+}
+.btn:hover { background: #fff; }
+
+/* ---------- Líneas ---------- */
+.ridge .fill { fill: var(--bg); }
+.ridge .line { fill: none; stroke: var(--fg); stroke-width: 1.6; stroke-linejoin: round; transition: opacity .35s; }
+.ridge .base { stroke: var(--faint); stroke-width: 1; }
+.ridge .hit { fill: transparent; cursor: pointer; }
+.ridge .hit:focus { outline: none; }
+.ridge text { fill: var(--dim); font-size: 12px; letter-spacing: .14em; transition: fill .3s, opacity .3s; }
+.ridge .num { font-variant-numeric: tabular-nums; }
+.ridge .cursor { stroke: var(--fg); stroke-width: 1; }
+.ridge .dot { fill: var(--fg); }
+.ridge .prog { stroke: var(--fg); stroke-width: 1.4; }
+.ridge .head { stroke: var(--fg); stroke-width: 1.4; }
+.ridge .htime { fill: var(--fg); font-size: 11px; letter-spacing: .08em; }
+.ridge .fval { fill: var(--fg); font-variant-numeric: tabular-nums; }
+
+#viz.focused .ridge:not(.on):not(.playing) .line { opacity: .2; }
+#viz.focused .ridge:not(.on):not(.playing) text { opacity: .45; }
+#viz .ridge.on text, #viz .ridge.playing text, #viz .ridge.hover text { fill: var(--fg); }
+#viz .ridge.hover .line { opacity: 1 !important; }
+.ridge.playing .line { stroke-width: 1.8; }
+
+.side-label, .col-label { fill: var(--dim); font-size: 10px; letter-spacing: .4em; text-transform: uppercase; }
+.axis text { fill: var(--dim); font-size: 11px; letter-spacing: .1em; }
+.axis line { stroke: var(--faint); }
+
+/* ---------- Reproductor ---------- */
+.player {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 40; background: var(--bg);
+  border: 1px solid var(--faint); padding: 8px 12px; width: min(560px, calc(100vw - 20px));
+}
+.p-row { display: flex; align-items: center; gap: 8px; }
+.p-btn { background: none; border: 0; color: var(--dim); font-size: 13px; cursor: pointer; padding: 4px 6px; }
+.p-btn.main { color: var(--fg); font-size: 14px; min-width: 28px; }
+.p-btn:hover { color: var(--fg); }
+.p-title { flex: 1; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-time { font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+.p-embed { margin-top: 8px; }
+.p-embed iframe { display: block; border: 0; }
+.p-note { margin: 4px 0 0; font-size: 11px; color: var(--dim); }
+.p-note:empty { display: none; }
+
+/* ---------- Final ---------- */
+.end { max-width: 720px; margin: 0 auto; padding: 10vh 24px 140px; font-size: 13px; line-height: 1.65; color: #bdbdbd; }
+.end h2 { font-weight: 400; font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--fg); margin: 36px 0 12px; }
+.end ol { padding-left: 1.2em; }
+.end li { margin-bottom: 6px; }
+.end a { color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--faint); }
+#credits { margin-top: 36px; color: var(--dim); }
+
+#tip {
+  position: fixed; pointer-events: none; z-index: 50; background: var(--bg); color: var(--fg);
+  border: 1px solid var(--dim); padding: 6px 9px; font-size: 11px; letter-spacing: .08em; white-space: nowrap;
+}
+#tip span { color: var(--dim); }
+
+/* ---------- Pantallas estrechas: gráfico fijo arriba y texto que pasa por debajo ---------- */
+@media (max-width: 820px) {
+  .scrolly { display: block; padding: 0; }
+  .fig { height: auto; top: 0; z-index: 5; background: var(--bg); padding: 44px 10px 6px; border-bottom: 1px solid var(--faint); }
+  #viz { max-height: 36vh; }
+  .caption { min-height: 0; font-size: 11px; margin-top: 6px; }
+  .controls { gap: 8px; }
+  .seg button { padding: 4px 7px; font-size: 10px; letter-spacing: .1em; }
+  .steps { padding: 6vh 18px 30vh; position: relative; z-index: 2; }
+  .step { min-height: 60vh; opacity: .35; align-items: flex-start; padding-top: 4vh; }
+  .step .card { background: rgba(0, 0, 0, .88); padding: 6px 0; }
+  .step p { font-size: 16.5px; }
+  .player { bottom: 0; width: 100vw; border-left: 0; border-right: 0; }
+}

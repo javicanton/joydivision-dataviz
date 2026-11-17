@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unknown Pleasures (Joy Division) · reportaje con datos</title>
+<meta name="description" content="Reportaje con datos sobre Unknown Pleasures de Joy Division: cada línea es una canción y, mientras suena, su vúmetro.">
+<meta name="author" content="Javi Cantón-Correa">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="lang" role="group" aria-label="Idioma / Language">
+  <button type="button" data-lang="es">ES</button>
+  <button type="button" data-lang="en">EN</button>
+</div>
+
+<main class="scrolly">
+  <figure class="fig" id="fig">
+    <svg id="viz" role="img" aria-labelledby="viz-title"><title id="viz-title"></title></svg>
+    <figcaption>
+      <div class="controls">
+        <div class="seg" role="group" id="metric"></div>
+        <div class="seg" role="group" id="mode"></div>
+      </div>
+      <p class="caption" id="caption" aria-live="polite"></p>
+    </figcaption>
+  </figure>
+  <article class="steps" id="steps"></article>
+</main>
+
+<footer class="end">
+  <section id="method"></section>
+  <section id="sources"></section>
+  <p id="credits"></p>
+</footer>
+
+<div class="player" id="player" hidden>
+  <div class="p-row">
+    <button type="button" class="p-btn" id="p-prev" aria-label="←">⏮</button>
+    <button type="button" class="p-btn main" id="p-toggle"></button>
+    <button type="button" class="p-btn" id="p-next" aria-label="→">⏭</button>
+    <span class="p-title" id="p-title"></span>
+    <span class="p-time" id="p-time"></span>
+  </div>
+  <div class="p-embed" id="p-embed" hidden><div id="embed"></div></div>
+  <p class="p-note" id="p-note"></p>
+</div>
+
+<div id="tip" role="tooltip" hidden></div>
+<audio id="audio" preload="auto"></audio>
+<noscript><p>Esta página necesita JavaScript.</p></noscript>
+<script src="js/vendor/d3.min.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
