@@ -56,6 +56,8 @@
 
   // ---------- Dibujo ----------
   // dos capas: el disco entero en 80 líneas (primer paso del reportaje) y las diez canciones
+  // capa 0: la portada original (imagen); capa 1: el disco en 80 líneas; capa 2: las diez canciones
+  const originalLayer = svg.append("g").attr("class", "original").style("opacity", 0);
   const albumLayer = svg.append("g").attr("class", "album80").style("opacity", 0);
   const songsLayer = svg.append("g").attr("class", "songs-layer");
   const axis = songsLayer.append("g").attr("class", "axis");
@@ -184,14 +186,20 @@
   }
   const VIEW_AMP = NARROW ? 34 : 46;
   const album80Rows = drawAlbum80(albumLayer, W, H, VIEW_AMP, ZW);
+  // la portada original, cuadrada y centrada, ocupa el mismo sitio que el bloque de 80 líneas
+  const IMG = Math.min(H, ZW * 1.45);
+  originalLayer.append("image").attr("href", "assets/cover.png").attr("x", CX - IMG / 2).attr("y", (H - IMG) / 2)
+    .attr("width", IMG).attr("height", IMG).attr("preserveAspectRatio", "xMidYMid meet");
   function showView(animate) {
-    const album = state.view === "album", dur = animate ? 900 : 0;
+    const v = state.view, dur = animate ? 900 : 0;
     const geo = album80Geom(H, VIEW_AMP);
-    songsLayer.style("pointer-events", album ? "none" : null).transition().duration(dur).style("opacity", album ? 0 : 1);
-    albumLayer.interrupt().transition().duration(dur).style("opacity", album ? 1 : 0);
+    songsLayer.style("pointer-events", v !== "songs" ? "none" : null).transition().duration(dur).style("opacity", v === "songs" ? 1 : 0);
+    originalLayer.interrupt().transition().duration(dur).style("opacity", v === "original" ? 1 : 0);
+    albumLayer.interrupt().transition().duration(dur).style("opacity", v === "album" ? 1 : 0);
     // cada tramo se desplaza hacia la línea de su canción (o vuelve a su sitio)
     album80Rows.interrupt().transition().duration(dur).ease(d3.easeCubicInOut)
-      .attr("transform", d => (album ? null : `translate(0,${base(byId.get(tracks[d.song - 1].id)) - geo.y(d.i)})`));
+      .attr("transform", d => (v !== "songs" ? null : `translate(0,${base(byId.get(tracks[d.song - 1].id)) - geo.y(d.i)})`));
+    d3.select(".fig figcaption").style("visibility", v === "original" ? "hidden" : null);
   }
 
   // ---------- Lectura con el puntero ----------
@@ -474,11 +482,9 @@
   }
 
   // ---------- Portada ----------
-  const COVER = NARROW ? { W: 420, H: 470, AMP: 30, ZW: 270 } : { W: 640, H: 600, AMP: 42, ZW: 380 };
-  const coverSvg = d3.select("#cover-viz").attr("viewBox", `0 0 ${COVER.W} ${COVER.H}`);
-  coverSvg.append("g").attr("class", "album80").call(g => drawAlbum80(g, COVER.W, COVER.H, COVER.AMP, COVER.ZW));
   function renderCover() {
     const c = T().cover;
+    d3.select("#cover-img").attr("alt", c.caption);
     d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
     d3.select("#c-byline").text(c.byline); d3.select("#cover-caption").text(c.caption); d3.select("#c-scroll").text(c.scroll);
   }

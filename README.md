@@ -4,8 +4,8 @@
 
 Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el primer disco de Joy Division, en tres tiempos:
 
-1. **Portada.** Titular, subtítulo y el disco entero (39 minutos) dibujado en 80 líneas de unos 30 segundos, como los 80 pulsos de la portada original.
-2. **Scrollytelling.** Las 80 líneas se reordenan en las diez canciones y el texto recorre la historia del disco mientras el gráfico cambia.
+1. **Portada.** Titular, subtítulo y la portada original del disco (`assets/cover.png`; diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.).
+2. **Scrollytelling.** La portada se transforma en el disco entero (39 minutos) dibujado en 80 líneas de unos 30 segundos, que después se reordenan en las diez canciones; el texto recorre la historia del disco mientras el gráfico cambia.
 3. **Reproductor.** Al final, el gráfico funciona como reproductor del disco, con un vúmetro en la línea que suena.
 
 - **Diez líneas, diez canciones.** Cada línea es una canción, en el orden del disco (cara *Outside* arriba, *Inside* abajo). Como en la portada, es plana a los lados y en el centro se levanta la canción: primero su forma de onda y, para compararlas, sonoridad, brillo, graves o pulso. Con los botones de atributo se dibuja junto a cada línea, como una barra, un valor de ReccoBeats (energía, valencia, bailabilidad, instrumentalidad o acústica) para comparar las canciones. La parte central puede tener la misma anchura para todas o la duración real.

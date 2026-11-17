@@ -3,6 +3,7 @@
    metric (dato de las líneas), mode (equal | real), focus (canciones destacadas),
    feature (atributo de ReccoBeats que se muestra junto a cada línea). */
 window.STEPS = [
+  { id: "original",   metric: "wave",       mode: "equal", focus: [], view: "original" },
   { id: "pulses",     metric: "wave",       mode: "equal", focus: [], view: "album" },
   { id: "read",       metric: "wave",       mode: "equal", focus: [] },
   { id: "compare",    metric: "loudness",   mode: "equal", focus: [] },
@@ -53,15 +54,18 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, dibujado con su propio sonido",
       dek: "La portada del primer disco de Joy Division es un gráfico de datos: 80 pulsos de una estrella lejana. Medimos el audio de sus diez canciones y lo contamos con el mismo lenguaje, para leerlo, compararlo y escucharlo.",
       byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
-      caption: "El disco entero (39 minutos) en 80 líneas de unos 30 segundos: cada una es la forma de onda de un tramo.",
+      caption: "Portada de Unknown Pleasures (Factory Records, 1979). Diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.",
       scroll: "Desliza para empezar"
     },
     featureLabel: "Atributo",
     sourcesTitle: "Fuentes",
     methodTitle: "Cómo se hizo",
     steps: {
+      original: `<h2>El punto de partida</h2>
+        <p>Esta es la portada de <i>Unknown Pleasures</i>: 80 pulsos sucesivos de radio de CP 1919, el primer púlsar descubierto, apilados uno sobre otro. Es un gráfico científico de 1970 convertido en una de las imágenes más reconocibles de la música popular.</p>
+        <p>¿Qué pasa si usamos el mismo lenguaje para dibujar el sonido del disco?</p>`,
       pulses: `<h2>El disco entero en 80 líneas</h2>
-        <p>La portada de <i>Unknown Pleasures</i> apila 80 pulsos sucesivos de una estrella. Aquí hemos hecho lo mismo con el propio disco: sus 39 minutos, cortados en 80 tramos de unos 30 segundos. Cada línea es la forma de onda de un tramo, y de arriba abajo se lee el disco de principio a fin.</p>
+        <p>Hemos hecho lo mismo con el propio disco: sus 39 minutos, cortados en 80 tramos de unos 30 segundos. Cada línea es la forma de onda de un tramo, y de arriba abajo se lee el disco de principio a fin.</p>
         <p>Los tramos planos son los silencios entre canciones; los picos, los momentos de más volumen. Ahora ordenamos esos tramos por canción.</p>`,
       read: `<h2>Cómo leer las líneas</h2>
         <p>Cada línea es una canción, en el orden del disco: arriba la cara <i>Outside</i> (1 a 5) y abajo la cara <i>Inside</i> (6 a 10). Como en la portada, cada línea es plana a los lados y en el centro se levanta la canción, de principio a fin: su <b>forma de onda</b>, el pico de amplitud de cada instante.</p>
@@ -154,15 +158,18 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, drawn with its own sound",
       dek: "The cover of Joy Division's debut album is a data chart: 80 pulses from a distant star. We measured the audio of its ten songs and tell their story in the same language, to read, compare and listen.",
       byline: "Javi Cantón-Correa · 17 November 2026",
-      caption: "The whole album (39 minutes) in 80 lines of about 30 seconds: each one is the waveform of one stretch.",
+      caption: "Cover of Unknown Pleasures (Factory Records, 1979). Designed by Peter Saville from a chart by Harold D. Craft Jr.",
       scroll: "Scroll to begin"
     },
     featureLabel: "Attribute",
     sourcesTitle: "Sources",
     methodTitle: "How it was made",
     steps: {
+      original: `<h2>The starting point</h2>
+        <p>This is the cover of <i>Unknown Pleasures</i>: 80 successive radio pulses from CP 1919, the first pulsar discovered, stacked one above the other. A 1970 scientific chart turned into one of the most recognisable images in popular music.</p>
+        <p>What happens if we use the same language to draw the album's sound?</p>`,
       pulses: `<h2>The whole album in 80 lines</h2>
-        <p>The cover of <i>Unknown Pleasures</i> stacks 80 successive pulses from a star. Here we did the same with the album itself: its 39 minutes, cut into 80 stretches of about 30 seconds. Each line is the waveform of one stretch, and the album reads from top to bottom, start to end.</p>
+        <p>We did the same with the album itself: its 39 minutes, cut into 80 stretches of about 30 seconds. Each line is the waveform of one stretch, and the album reads from top to bottom, start to end.</p>
         <p>The flat stretches are the silences between songs; the peaks, the loudest moments. Now we sort those stretches by song.</p>`,
       read: `<h2>How to read the lines</h2>
         <p>Each line is a song, in album order: the <i>Outside</i> side on top (1 to 5) and the <i>Inside</i> side below (6 to 10). As on the cover, each line is flat at the sides and the song rises in the middle, from start to end: its <b>waveform</b>, the amplitude peak at each moment.</p>
