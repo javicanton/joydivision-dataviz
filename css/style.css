@@ -35,7 +35,7 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 .scroll-cue::after { content: ""; display: block; width: 1px; height: 34px; background: var(--dim); margin: 10px auto 0; }
 .pulsar .pline { fill: none; stroke: var(--fg); stroke-width: 1.4; stroke-linejoin: round; }
 .pulsar .plabel, .craft .plabel { fill: var(--dim); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
-.src-fig { margin: 22px 0 0; }
+.src-fig { margin: 22px 0 20px; }
 .src-fig img { display: block; max-width: 100%; height: auto; margin-bottom: 8px; }
 .src-fig figcaption { font-family: var(--font); font-size: 12px; line-height: 1.5; color: var(--dim); }
 
@@ -55,7 +55,7 @@ figcaption { margin-top: 10px; }
 
 .steps { padding: 30vh 0 40vh; }
 .songs-layer { transition: opacity .6s; }
-.step { min-height: 92vh; display: flex; align-items: center; opacity: .28; transition: opacity .4s; }
+.step { min-height: 92vh; padding: 10vh 0; display: flex; align-items: center; opacity: .28; transition: opacity .4s; }
 .step.active { opacity: 1; }
 .step .card { max-width: 440px; }
 .step h1 { font-weight: 400; font-size: clamp(34px, 4.4vw, 58px); letter-spacing: .1em; text-transform: uppercase; line-height: 1.05; margin: 0 0 22px; }

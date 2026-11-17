@@ -64,7 +64,7 @@ window.I18N = {
     steps: {
       pulsar: `<h2>Una estrella que late</h2>
         <p>Jocelyn Bell Burnell construyó un radiotelescopio para su tesis doctoral en Cambridge y, en 1967, detectó en sus registros una señal que se repetía cada 1,3373 segundos. La apodó <i>Little Green Man</i>. El 28 de noviembre de 1967 se identificó como el primer púlsar: CP 1919 (hoy PSR B1919+21), una estrella de neutrones que gira y barre el espacio con su haz como un faro. La línea de la izquierda late a ese ritmo (la forma del pulso es esquemática).</p>
-        <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" alt="Jocelyn Bell Burnell con el radiotelescopio que construyó" loading="lazy" onerror="this.parentNode.remove()"><figcaption>Jocelyn Bell Burnell con el radiotelescopio que construyó. Foto: Martin Burnell.</figcaption></figure>
+        <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" width="780" height="780" alt="Jocelyn Bell Burnell sonriendo, con una antena de radiotelescopio al fondo" loading="lazy"><figcaption>Jocelyn Bell Burnell. Imagen: <a href="https://mujeresconciencia.com/2014/12/03/el-universo-de-jocelyn-bell-burnell/" target="_blank" rel="noopener">Mujeres con Ciencia</a>.</figcaption></figure>
         <p>El Nobel de Física de 1974 premió a su director de tesis, Antony Hewish, y a Martin Ryle. Bell Burnell quedó fuera.</p>`,
       craft: `<h2>80 pulsos en una tesis</h2>
         <p>Harold D. Craft Jr., estudiante de doctorado de la Universidad de Cornell, observó CP 1919 desde el radiotelescopio de Arecibo (Puerto Rico). Para su tesis de 1970 dibujó con un trazador Calcomp, controlado por ordenador, 80 pulsos sucesivos apilados uno encima de otro.</p>
@@ -132,6 +132,7 @@ window.I18N = {
       ["Known pleasures: from pulsar signal to post-punk icon, Big Think", "https://bigthink.com/strange-maps/known-pleasures-from-pulsar-signal-to-post-punk-icon/"],
       ["Jocelyn Bell Burnell y CP 1919, Universidad de Cambridge", "https://cam.ac.uk/node/220051"],
       ["Alberto Areta: Danza SR B1919+21", "https://www.albertoareta.com/proyectos/sr-b1919-21"],
+      ["Mujeres con Ciencia: El universo de Jocelyn Bell Burnell (2014)", "https://mujeresconciencia.com/2014/12/03/el-universo-de-jocelyn-bell-burnell/"],
       ["Claus Wilke: Goodbye joyplots (2017)", "https://clauswilke.com/blog/2017/09/15/goodbye-joyplots/"],
       ["ReccoBeats API", "https://reccobeats.com/"]
     ],
@@ -178,7 +179,7 @@ window.I18N = {
     steps: {
       pulsar: `<h2>A star that beats</h2>
         <p>Jocelyn Bell Burnell built a radio telescope for her PhD at Cambridge and, in 1967, spotted in its records a signal that repeated every 1.3373 seconds. She nicknamed it <i>Little Green Man</i>. On 28 November 1967 it was identified as the first pulsar: CP 1919 (today PSR B1919+21), a spinning neutron star that sweeps space with its beam like a lighthouse. The line on the left beats at that rhythm (the pulse shape is schematic).</p>
-        <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" alt="Jocelyn Bell Burnell with the radio telescope she built" loading="lazy" onerror="this.parentNode.remove()"><figcaption>Jocelyn Bell Burnell with the radio telescope she built. Photo: Martin Burnell.</figcaption></figure>
+        <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" width="780" height="780" alt="Jocelyn Bell Burnell smiling, with a radio telescope dish behind her" loading="lazy"><figcaption>Jocelyn Bell Burnell. Image: <a href="https://mujeresconciencia.com/2014/12/03/el-universo-de-jocelyn-bell-burnell/" target="_blank" rel="noopener">Mujeres con Ciencia</a>.</figcaption></figure>
         <p>The 1974 Nobel Prize in Physics went to her thesis supervisor, Antony Hewish, and to Martin Ryle. Bell Burnell was left out.</p>`,
       craft: `<h2>80 pulses in a thesis</h2>
         <p>Harold D. Craft Jr., a Cornell PhD student, observed CP 1919 from the Arecibo radio telescope (Puerto Rico). For his 1970 thesis he used a computer-driven Calcomp plotter to draw 80 successive pulses stacked one above the other.</p>
