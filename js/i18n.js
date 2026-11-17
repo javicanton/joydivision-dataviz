@@ -3,6 +3,7 @@
    metric (dato de las líneas), mode (equal | real), focus (canciones destacadas),
    feature (atributo de ReccoBeats que se muestra junto a cada línea). */
 window.STEPS = [
+  { id: "pulsar",     metric: "wave",       mode: "equal", focus: [], view: "pulsar" },
   { id: "original",   metric: "wave",       mode: "equal", focus: [], view: "original" },
   { id: "pulses",     metric: "wave",       mode: "equal", focus: [], view: "album" },
   { id: "read",       metric: "wave",       mode: "equal", focus: [] },
@@ -57,12 +58,17 @@ window.I18N = {
       caption: "Portada de Unknown Pleasures (Factory Records, 1979). Diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.",
       scroll: "Desliza para empezar"
     },
-    featureLabel: "Atributo",
+    featureLabel: "Atributo", pulsarLabel: "CP 1919 · un pulso cada 1,3373 s",
     sourcesTitle: "Fuentes",
     methodTitle: "Cómo se hizo",
     steps: {
-      original: `<h2>El punto de partida</h2>
-        <p>Esta es la portada de <i>Unknown Pleasures</i>: 80 pulsos sucesivos de radio de CP 1919, el primer púlsar descubierto, apilados uno sobre otro. Es un gráfico científico de 1970 convertido en una de las imágenes más reconocibles de la música popular.</p>
+      pulsar: `<h2>Una estrella que late</h2>
+        <p>El 28 de noviembre de 1967, Jocelyn Bell Burnell detectó en Cambridge una señal de radio que se repetía con una regularidad asombrosa: un pulso cada 1,3373 segundos. Era CP 1919, el primer púlsar conocido, una estrella de neutrones que gira y barre el espacio con su haz como un faro. La línea de la izquierda late a ese ritmo (la forma del pulso es esquemática).</p>
+        <p>En 1970, Harold D. Craft Jr. apiló 80 pulsos sucesivos de CP 1919 en un gráfico para su tesis doctoral, con datos del radiotelescopio de Arecibo. El gráfico se publicó en <i>Scientific American</i> en enero de 1971 y en la <i>Cambridge Encyclopaedia of Astronomy</i> en 1977.</p>
+        <figure class="src-fig"><img src="assets/craft-1970.png" alt="Gráfico de Harold D. Craft Jr. (1970) con 80 pulsos sucesivos de CP 1919" onerror="this.remove()">
+          <figcaption>El gráfico original de Craft puede verse en el <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">reportaje de Jen Christiansen en <i>Scientific American</i></a>.</figcaption></figure>`,
+      original: `<h2>De la tesis a la portada</h2>
+        <p>Ese gráfico es la portada de <i>Unknown Pleasures</i>: los 80 pulsos de CP 1919 apilados uno sobre otro, en blanco sobre negro. Un gráfico científico convertido en una de las imágenes más reconocibles de la música popular.</p>
         <p>¿Qué pasa si usamos el mismo lenguaje para dibujar el sonido del disco?</p>`,
       pulses: `<h2>El disco entero en 80 líneas</h2>
         <p>Hemos hecho lo mismo con el propio disco: sus 39 minutos, cortados en 80 tramos de unos 30 segundos. Cada línea es la forma de onda de un tramo, y de arriba abajo se lee el disco de principio a fin.</p>
@@ -161,12 +167,17 @@ window.I18N = {
       caption: "Cover of Unknown Pleasures (Factory Records, 1979). Designed by Peter Saville from a chart by Harold D. Craft Jr.",
       scroll: "Scroll to begin"
     },
-    featureLabel: "Attribute",
+    featureLabel: "Attribute", pulsarLabel: "CP 1919 · one pulse every 1.3373 s",
     sourcesTitle: "Sources",
     methodTitle: "How it was made",
     steps: {
-      original: `<h2>The starting point</h2>
-        <p>This is the cover of <i>Unknown Pleasures</i>: 80 successive radio pulses from CP 1919, the first pulsar discovered, stacked one above the other. A 1970 scientific chart turned into one of the most recognisable images in popular music.</p>
+      pulsar: `<h2>A star that beats</h2>
+        <p>On 28 November 1967, Jocelyn Bell Burnell detected a radio signal in Cambridge that repeated with astonishing regularity: one pulse every 1.3373 seconds. It was CP 1919, the first known pulsar, a spinning neutron star that sweeps space with its beam like a lighthouse. The line on the left beats at that rhythm (the pulse shape is schematic).</p>
+        <p>In 1970, Harold D. Craft Jr. stacked 80 successive pulses of CP 1919 in a chart for his PhD thesis, with data from the Arecibo radio telescope. The chart was published in <i>Scientific American</i> in January 1971 and in the <i>Cambridge Encyclopaedia of Astronomy</i> in 1977.</p>
+        <figure class="src-fig"><img src="assets/craft-1970.png" alt="Harold D. Craft Jr.'s 1970 chart of 80 successive pulses of CP 1919" onerror="this.remove()">
+          <figcaption>Craft's original chart can be seen in <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">Jen Christiansen's story in <i>Scientific American</i></a>.</figcaption></figure>`,
+      original: `<h2>From thesis to cover</h2>
+        <p>That chart is the cover of <i>Unknown Pleasures</i>: the 80 pulses of CP 1919 stacked one above the other, white on black. A scientific chart turned into one of the most recognisable images in popular music.</p>
         <p>What happens if we use the same language to draw the album's sound?</p>`,
       pulses: `<h2>The whole album in 80 lines</h2>
         <p>We did the same with the album itself: its 39 minutes, cut into 80 stretches of about 30 seconds. Each line is the waveform of one stretch, and the album reads from top to bottom, start to end.</p>

@@ -57,6 +57,7 @@
   // ---------- Dibujo ----------
   // dos capas: el disco entero en 80 líneas (primer paso del reportaje) y las diez canciones
   // capa 0: la portada original (imagen); capa 1: el disco en 80 líneas; capa 2: las diez canciones
+  const pulsarLayer = svg.append("g").attr("class", "pulsar").style("opacity", 0);
   const originalLayer = svg.append("g").attr("class", "original").style("opacity", 0);
   const albumLayer = svg.append("g").attr("class", "album80").style("opacity", 0);
   const songsLayer = svg.append("g").attr("class", "songs-layer");
@@ -200,8 +201,24 @@
   const coverImg = originalLayer.append("image").attr("href", "assets/cover.png").attr("preserveAspectRatio", "xMidYMid meet");
   const placeImg = (sel, big) => { const p = imgAt(big); sel.attr("x", p.x).attr("y", p.y).attr("width", p.s).attr("height", p.s); };
   placeImg(coverImg, false);
+  // El púlsar: una sola línea que late con el periodo real de CP 1919 (la forma del pulso es esquemática)
+  const PERIOD = 1.3373;
+  const pulsarY = H / 2 + 40;
+  const pulsarLine = pulsarLayer.append("path").attr("class", "pline");
+  const pulsarText = pulsarLayer.append("text").attr("class", "plabel").attr("x", CX).attr("y", pulsarY + 34).attr("text-anchor", "middle");
+  function drawPulsar(now) {
+    const ph = ((now / 1000) % PERIOD) / PERIOD, amp = Math.exp(-ph * 9) * (NARROW ? 110 : 170);
+    const pts = [];
+    for (let i = 0; i <= 160; i++) {
+      const x = BX0 + BW * i / 160, u = (i / 160 - 0.5) / 0.035;
+      pts.push([x, pulsarY - amp * Math.exp(-u * u / 2) - (Math.sin(i * 1.7 + now / 90) * 0.6 + 0.6)]);
+    }
+    pulsarLine.attr("d", d3.line()(pts));
+  }
   function showView(animate) {
     const v = state.view, dur = animate ? 1000 : 0, ease = d3.easeCubicInOut;
+    pulsarLayer.interrupt().transition().duration(dur).style("opacity", v === "pulsar" ? 1 : 0);
+    pulsarText.text(T().pulsarLabel);
     songsLayer.style("pointer-events", v !== "songs" ? "none" : null).transition().duration(dur).style("opacity", v === "songs" ? 1 : 0);
     originalLayer.interrupt().transition().duration(dur).ease(ease).style("opacity", v === "original" ? 1 : 0);
     coverImg.interrupt().transition().duration(dur).ease(ease).call(placeImg, v !== "original");
@@ -455,6 +472,7 @@
   }
   (function tick(now) {
     if (vu && !document.hidden) drawVu(now || performance.now());
+    if (state.view === "pulsar" && !document.hidden) drawPulsar(now || performance.now());
     requestAnimationFrame(tick);
   })();
 
@@ -497,6 +515,7 @@
   function renderCover() {
     const c = T().cover;
     d3.select("#cover-img").attr("alt", c.caption);
+    d3.select(".pulsar .plabel").text(T().pulsarLabel);
     d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
     d3.select("#c-byline").text(c.byline); d3.select("#cover-caption").text(c.caption); d3.select("#c-scroll").text(c.scroll);
   }
