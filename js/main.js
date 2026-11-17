@@ -163,43 +163,55 @@
     if (viewChanged || !animate) showView(animate);
   }
 
-  // ---------- El disco entero en 80 líneas ----------
-  // Cada línea es un tramo de unos 30 segundos del disco encadenado. Se usa en la portada y en el primer
-  // paso del reportaje; al pasar a las canciones, cada tramo baja o sube hasta la línea de su canción.
+  // ---------- De la portada al disco ----------
+  // 1) "original": la portada del disco (assets/cover.png), entera y centrada.
+  // 2) "album": la imagen se amplía hasta que el bloque de líneas de la portada ocupa el mismo sitio que
+  //    el disco dibujado en 80 líneas (80 tramos de unos 30 segundos, con la forma de onda de cada uno),
+  //    que aparece en su lugar con las mismas proporciones: líneas planas a los lados y picos en el centro.
+  // 3) "songs": cada tramo se desplaza y se estira hasta la línea de su canción.
   const A80 = data.album80;
-  function album80Geom(h, amp) {
-    const yTop = amp + 8, gap = (h - 14 - yTop) / (A80.lines - 1);
-    return { y: i => yTop + i * gap, amp };
-  }
-  function drawAlbum80(g, width, h, amp, zw) {
-    const geo = album80Geom(h, amp), cx = width / 2;
-    const line80 = d3.line();
+  // Posición del bloque de líneas dentro de la imagen de la portada (fracción del lado de la imagen)
+  const COVER_BOX = { x0: 0.297, x1: 0.725, y0: 0.216, y1: 0.771 };
+  const BOX_RATIO = (COVER_BOX.y1 - COVER_BOX.y0) / (COVER_BOX.x1 - COVER_BOX.x0);
+  const ZONE_FRAC = 0.62;                  // parte central de cada línea donde está el sonido
+  // bloque de 80 líneas en el gráfico: tan alto como cabe y con la proporción del de la portada
+  const BH = H - 24, BW = Math.min(W - 20, BH / BOX_RATIO), BY0 = 12, BX0 = CX - BW / 2;
+  const GAP80 = BH / (A80.lines + 6), AMP80 = GAP80 * 6.5;
+  const y80 = i => BY0 + AMP80 * 0.9 + i * (BH - AMP80 * 0.9) / (A80.lines - 1);
+  function drawAlbum80(g) {
+    const line80 = d3.line(), zw = BW * ZONE_FRAC, zx0 = CX - zw / 2;
     const rows = A80.values.map((vals, i) => {
-      const y = geo.y(i), x0 = cx - zw / 2;
-      const pts = [[0, y], [x0, y], ...vals.map((v, j) => [x0 + zw * j / (vals.length - 1), y - v * geo.amp]), [cx + zw / 2, y], [width, y]];
-      return { i, song: A80.song[i], d: line80(pts), f: line80(pts) + `L${width},${y + 1}L0,${y + 1}Z`, y };
+      const y = y80(i);
+      const pts = [[BX0, y], [zx0, y], ...vals.map((v, j) => [zx0 + zw * j / (vals.length - 1), y - v * AMP80]), [zx0 + zw, y], [BX0 + BW, y]];
+      return { i, song: A80.song[i], d: line80(pts), f: line80(pts) + `L${BX0 + BW},${y + 1}L${BX0},${y + 1}Z`, y };
     });
     const r = g.selectAll("g.r").data(rows).join("g").attr("class", "r");
     r.append("path").attr("class", "f").attr("d", d => d.f);
-    r.append("path").attr("d", d => d.d);
+    r.append("path").attr("d", d => d.d).attr("vector-effect", "non-scaling-stroke");
     return r;
   }
-  const VIEW_AMP = NARROW ? 34 : 46;
-  const album80Rows = drawAlbum80(albumLayer, W, H, VIEW_AMP, ZW);
-  // la portada original, cuadrada y centrada, ocupa el mismo sitio que el bloque de 80 líneas
-  const IMG = Math.min(H, ZW * 1.45);
-  originalLayer.append("image").attr("href", "assets/cover.png").attr("x", CX - IMG / 2).attr("y", (H - IMG) / 2)
-    .attr("width", IMG).attr("height", IMG).attr("preserveAspectRatio", "xMidYMid meet");
+  const album80Rows = drawAlbum80(albumLayer);
+  // la portada: entera (original) o ampliada hasta que su bloque coincide con el de 80 líneas (album)
+  const IMG0 = Math.min(H, W);
+  const IMG1 = BW / (COVER_BOX.x1 - COVER_BOX.x0);
+  const imgAt = big => big
+    ? { x: BX0 - COVER_BOX.x0 * IMG1, y: BY0 - COVER_BOX.y0 * IMG1, s: IMG1 }
+    : { x: CX - IMG0 / 2, y: (H - IMG0) / 2, s: IMG0 };
+  const coverImg = originalLayer.append("image").attr("href", "assets/cover.png").attr("preserveAspectRatio", "xMidYMid meet");
+  const placeImg = (sel, big) => { const p = imgAt(big); sel.attr("x", p.x).attr("y", p.y).attr("width", p.s).attr("height", p.s); };
+  placeImg(coverImg, false);
   function showView(animate) {
-    const v = state.view, dur = animate ? 900 : 0;
-    const geo = album80Geom(H, VIEW_AMP);
+    const v = state.view, dur = animate ? 1000 : 0, ease = d3.easeCubicInOut;
     songsLayer.style("pointer-events", v !== "songs" ? "none" : null).transition().duration(dur).style("opacity", v === "songs" ? 1 : 0);
-    originalLayer.interrupt().transition().duration(dur).style("opacity", v === "original" ? 1 : 0);
-    albumLayer.interrupt().transition().duration(dur).style("opacity", v === "album" ? 1 : 0);
-    // cada tramo se desplaza hacia la línea de su canción (o vuelve a su sitio)
-    album80Rows.interrupt().transition().duration(dur).ease(d3.easeCubicInOut)
-      .attr("transform", d => (v !== "songs" ? null : `translate(0,${base(byId.get(tracks[d.song - 1].id)) - geo.y(d.i)})`));
-    d3.select(".fig figcaption").style("visibility", v === "original" ? "hidden" : null);
+    originalLayer.interrupt().transition().duration(dur).ease(ease).style("opacity", v === "original" ? 1 : 0);
+    coverImg.interrupt().transition().duration(dur).ease(ease).call(placeImg, v !== "original");
+    albumLayer.interrupt().transition().duration(dur).ease(ease).style("opacity", v === "album" ? 1 : 0);
+    // cada tramo se desplaza hasta la línea de su canción y se estira hasta su anchura
+    const sx = ZW / (BW * ZONE_FRAC);
+    album80Rows.interrupt().transition().duration(dur).ease(ease)
+      .attr("transform", d => (v !== "songs" ? "translate(0,0) scale(1,1)"
+        : `translate(${CX * (1 - sx)},${base(byId.get(tracks[d.song - 1].id)) - d.y}) scale(${sx},1)`));
+    d3.select(".fig figcaption").style("visibility", v === "songs" ? null : "hidden");
   }
 
   // ---------- Lectura con el puntero ----------
