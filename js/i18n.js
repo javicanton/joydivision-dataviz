@@ -63,12 +63,14 @@ window.I18N = {
     methodTitle: "Cómo se hizo",
     steps: {
       pulsar: `<h2>Una estrella que late</h2>
-        <p>El 28 de noviembre de 1967, Jocelyn Bell Burnell detectó en Cambridge una señal de radio que se repetía con una regularidad asombrosa: un pulso cada 1,3373 segundos. Era CP 1919, el primer púlsar conocido, una estrella de neutrones que gira y barre el espacio con su haz como un faro. La línea de la izquierda late a ese ritmo (la forma del pulso es esquemática).</p>
-        <p>En 1970, Harold D. Craft Jr. apiló 80 pulsos sucesivos de CP 1919 en un gráfico para su tesis doctoral, con datos del radiotelescopio de Arecibo. El gráfico se publicó en <i>Scientific American</i> en enero de 1971 y en la <i>Cambridge Encyclopaedia of Astronomy</i> en 1977.</p>
-        <figure class="src-fig"><img src="assets/craft-1970.png" alt="Gráfico de Harold D. Craft Jr. (1970) con 80 pulsos sucesivos de CP 1919" onerror="this.remove()">
-          <figcaption>El gráfico original de Craft puede verse en el <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">reportaje de Jen Christiansen en <i>Scientific American</i></a>.</figcaption></figure>`,
+        <p>Jocelyn Bell Burnell construyó un radiotelescopio para su tesis doctoral en Cambridge y, en 1967, detectó en sus registros una señal que se repetía cada 1,3373 segundos. La apodó <i>Little Green Man</i>. El 28 de noviembre de 1967 se identificó como el primer púlsar: CP 1919 (hoy PSR B1919+21), una estrella de neutrones que gira y barre el espacio con su haz como un faro. La línea de la izquierda late a ese ritmo (la forma del pulso es esquemática).</p>
+        <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" alt="Jocelyn Bell Burnell con el radiotelescopio que construyó" loading="lazy" onerror="this.parentNode.remove()"><figcaption>Jocelyn Bell Burnell con el radiotelescopio que construyó. Foto: Martin Burnell.</figcaption></figure>
+        <p>El Nobel de Física de 1974 premió a su director de tesis, Antony Hewish, y a Martin Ryle. Bell Burnell quedó fuera.</p>
+        <p>En 1970, Harold D. Craft Jr. apiló 80 pulsos sucesivos de CP 1919 en un gráfico para su tesis doctoral, con datos del radiotelescopio de Arecibo. Se publicó en <i>Scientific American</i> en enero de 1971 y en la <i>Cambridge Encyclopaedia of Astronomy</i> en 1977.</p>
+        <figure class="src-fig"><img src="assets/craft-1970.jpg" alt="Gráfico de Harold D. Craft Jr. con perfiles de pulsos de varios púlsares" loading="lazy" onerror="this.parentNode.remove()"><figcaption>Perfiles de pulsos de Harold D. Craft Jr. (1970).</figcaption></figure>
+        <p class="note">Más sobre esta historia en <a href="https://www.albertoareta.com/proyectos/sr-b1919-21" target="_blank" rel="noopener">Danza SR B1919+21, de Alberto Areta</a>, y en el <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">reportaje de Jen Christiansen en <i>Scientific American</i></a>.</p>`,
       original: `<h2>De la tesis a la portada</h2>
-        <p>Ese gráfico es la portada de <i>Unknown Pleasures</i>: los 80 pulsos de CP 1919 apilados uno sobre otro, en blanco sobre negro. Un gráfico científico convertido en una de las imágenes más reconocibles de la música popular.</p>
+        <p>Nueve años después, Bernard Sumner encontró una reproducción de ese gráfico en la <i>Cambridge Encyclopaedia of Astronomy</i> y se la pasó a Peter Saville. Es la portada de <i>Unknown Pleasures</i>: los 80 pulsos de CP 1919 apilados uno sobre otro, en blanco sobre negro. Un gráfico científico convertido en una de las imágenes más reconocibles de la música popular.</p>
         <p>¿Qué pasa si usamos el mismo lenguaje para dibujar el sonido del disco?</p>`,
       pulses: `<h2>El disco entero en 80 líneas</h2>
         <p>Hemos hecho lo mismo con el propio disco: sus 39 minutos, cortados en 80 tramos de unos 30 segundos. Cada línea es la forma de onda de un tramo, y de arriba abajo se lee el disco de principio a fin.</p>
@@ -109,7 +111,8 @@ window.I18N = {
         <p>En enero de 1980 fue número 2 en la primera lista de discos independientes del Reino Unido, que más tarde encabezó, y estuvo en ella 136 semanas. A la lista general no llegó hasta agosto de 1980 (número 71), tras la muerte de Curtis en mayo y la publicación de <i>Closer</i>. La reedición del 40.º aniversario, en 2019, llegó al número 5, el puesto más alto de la banda.</p>`,
       legacy: `<h2>Del vinilo a la camiseta</h2>
         <p>Hoy figura en las grandes listas de la crítica: puesto 211 en los 500 mejores discos de <i>Rolling Stone</i> (2020) y 9 entre los mejores de los setenta para <i>Pitchfork</i>. Se considera uno de los discos más influyentes del <i>post-punk</i>.</p>
-        <p>La portada ha ido más lejos que el disco: Raf Simons y Saville la llevaron a la moda en 2003, después vino Supreme, y en 2012 Disney la puso en una camiseta de Mickey Mouse.</p>`,
+        <p>La portada ha ido más lejos que el disco: Raf Simons y Saville la llevaron a la moda en 2003, después vino Supreme, y en 2012 Disney la puso en una camiseta de Mickey Mouse.</p>
+        <p>También ha vuelto al arte: el fotógrafo Alberto Areta convirtió el púlsar en <a href="https://www.albertoareta.com/proyectos/sr-b1919-21" target="_blank" rel="noopener"><i>Danza SR B1919+21</i></a>, una animación montada a mano a partir de cianotipias.</p>`,
       ridgeline: `<h2>Joyplot: un nombre para un gráfico</h2>
         <p>En 2017, la comunidad de ciencia de datos empezó a llamar <i>joyplot</i> a los gráficos de líneas superpuestas, en homenaje a esta portada. Claus Wilke publicó el paquete de R ggjoy y el nombre se extendió muy rápido.</p>
         <p>En septiembre de ese año, Wilke lo retiró: el nombre del grupo procede de una novela sobre los campos de concentración nazis. El paquete pasó a llamarse ggridges y el gráfico, <i>ridgeline plot</i> o gráfico de crestas, como el que acompaña este texto.</p>`,
@@ -127,6 +130,7 @@ window.I18N = {
       ["Jen Christiansen: Pop Culture Pulsar, Scientific American (2015)", "https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/"],
       ["Known pleasures: from pulsar signal to post-punk icon, Big Think", "https://bigthink.com/strange-maps/known-pleasures-from-pulsar-signal-to-post-punk-icon/"],
       ["Jocelyn Bell Burnell y CP 1919, Universidad de Cambridge", "https://cam.ac.uk/node/220051"],
+      ["Alberto Areta: Danza SR B1919+21", "https://www.albertoareta.com/proyectos/sr-b1919-21"],
       ["Claus Wilke: Goodbye joyplots (2017)", "https://clauswilke.com/blog/2017/09/15/goodbye-joyplots/"],
       ["ReccoBeats API", "https://reccobeats.com/"]
     ],
@@ -172,12 +176,14 @@ window.I18N = {
     methodTitle: "How it was made",
     steps: {
       pulsar: `<h2>A star that beats</h2>
-        <p>On 28 November 1967, Jocelyn Bell Burnell detected a radio signal in Cambridge that repeated with astonishing regularity: one pulse every 1.3373 seconds. It was CP 1919, the first known pulsar, a spinning neutron star that sweeps space with its beam like a lighthouse. The line on the left beats at that rhythm (the pulse shape is schematic).</p>
-        <p>In 1970, Harold D. Craft Jr. stacked 80 successive pulses of CP 1919 in a chart for his PhD thesis, with data from the Arecibo radio telescope. The chart was published in <i>Scientific American</i> in January 1971 and in the <i>Cambridge Encyclopaedia of Astronomy</i> in 1977.</p>
-        <figure class="src-fig"><img src="assets/craft-1970.png" alt="Harold D. Craft Jr.'s 1970 chart of 80 successive pulses of CP 1919" onerror="this.remove()">
-          <figcaption>Craft's original chart can be seen in <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">Jen Christiansen's story in <i>Scientific American</i></a>.</figcaption></figure>`,
+        <p>Jocelyn Bell Burnell built a radio telescope for her PhD at Cambridge and, in 1967, spotted in its records a signal that repeated every 1.3373 seconds. She nicknamed it <i>Little Green Man</i>. On 28 November 1967 it was identified as the first pulsar: CP 1919 (today PSR B1919+21), a spinning neutron star that sweeps space with its beam like a lighthouse. The line on the left beats at that rhythm (the pulse shape is schematic).</p>
+        <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" alt="Jocelyn Bell Burnell with the radio telescope she built" loading="lazy" onerror="this.parentNode.remove()"><figcaption>Jocelyn Bell Burnell with the radio telescope she built. Photo: Martin Burnell.</figcaption></figure>
+        <p>The 1974 Nobel Prize in Physics went to her thesis supervisor, Antony Hewish, and to Martin Ryle. Bell Burnell was left out.</p>
+        <p>In 1970, Harold D. Craft Jr. stacked 80 successive pulses of CP 1919 in a chart for his PhD thesis, with data from the Arecibo radio telescope. It was published in <i>Scientific American</i> in January 1971 and in the <i>Cambridge Encyclopaedia of Astronomy</i> in 1977.</p>
+        <figure class="src-fig"><img src="assets/craft-1970.jpg" alt="Harold D. Craft Jr.'s chart of pulse profiles from several pulsars" loading="lazy" onerror="this.parentNode.remove()"><figcaption>Pulse profiles by Harold D. Craft Jr. (1970).</figcaption></figure>
+        <p class="note">More on this story in <a href="https://www.albertoareta.com/proyectos/sr-b1919-21" target="_blank" rel="noopener">Danza SR B1919+21, by Alberto Areta</a>, and in <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">Jen Christiansen's story in <i>Scientific American</i></a>.</p>`,
       original: `<h2>From thesis to cover</h2>
-        <p>That chart is the cover of <i>Unknown Pleasures</i>: the 80 pulses of CP 1919 stacked one above the other, white on black. A scientific chart turned into one of the most recognisable images in popular music.</p>
+        <p>Nine years later, Bernard Sumner found a reproduction of that chart in the <i>Cambridge Encyclopaedia of Astronomy</i> and passed it to Peter Saville. It is the cover of <i>Unknown Pleasures</i>: the 80 pulses of CP 1919 stacked one above the other, white on black. A scientific chart turned into one of the most recognisable images in popular music.</p>
         <p>What happens if we use the same language to draw the album's sound?</p>`,
       pulses: `<h2>The whole album in 80 lines</h2>
         <p>We did the same with the album itself: its 39 minutes, cut into 80 stretches of about 30 seconds. Each line is the waveform of one stretch, and the album reads from top to bottom, start to end.</p>
@@ -218,7 +224,8 @@ window.I18N = {
         <p>In January 1980 it was number 2 on the first UK independent albums chart, which it later topped, spending 136 weeks on it. It only reached the main chart in August 1980 (number 71), after Curtis's death in May and the release of <i>Closer</i>. The 40th-anniversary reissue in 2019 reached number 5, the band's highest position.</p>`,
       legacy: `<h2>From vinyl to T-shirt</h2>
         <p>Today it sits in the critics' big lists: number 211 in <i>Rolling Stone</i>'s 500 greatest albums (2020) and number 9 among <i>Pitchfork</i>'s best albums of the 1970s. It is considered one of the most influential post-punk albums.</p>
-        <p>The cover has travelled further than the album: Raf Simons and Saville took it into fashion in 2003, Supreme followed, and in 2012 Disney put it on a Mickey Mouse T-shirt.</p>`,
+        <p>The cover has travelled further than the album: Raf Simons and Saville took it into fashion in 2003, Supreme followed, and in 2012 Disney put it on a Mickey Mouse T-shirt.</p>
+        <p>It has gone back to art too: photographer Alberto Areta turned the pulsar into <a href="https://www.albertoareta.com/proyectos/sr-b1919-21" target="_blank" rel="noopener"><i>Danza SR B1919+21</i></a>, an animation assembled by hand from cyanotypes.</p>`,
       ridgeline: `<h2>Joyplot: a name for a chart</h2>
         <p>In 2017 the data science community started calling stacked line charts <i>joyplots</i>, in tribute to this cover. Claus Wilke released the ggjoy R package and the name spread fast.</p>
         <p>In September that year, Wilke retired it: the band's name comes from a novel about the Nazi concentration camps. The package became ggridges and the chart a <i>ridgeline plot</i>, like the one beside this text.</p>`,

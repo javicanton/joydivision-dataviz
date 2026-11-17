@@ -4,8 +4,8 @@
 
 Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el primer disco de Joy Division, en tres tiempos:
 
-1. **Portada.** Titular, subtítulo y la portada original del disco (`assets/cover.png`; diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.).
-2. **Scrollytelling.** Empieza con el púlsar CP 1919 (una línea que late con su periodo real, 1,3373 s) y el gráfico de Harold D. Craft Jr. de 1970 (si existe `assets/craft-1970.png`; si no, enlace a *Scientific American*). Después la portada se transforma en el disco entero (39 minutos) dibujado en 80 líneas de unos 30 segundos, que después se reordenan en las diez canciones; el texto recorre la historia del disco mientras el gráfico cambia.
+1. **Portada.** Titular, subtítulo y la portada original del disco (`assets/cover.jpg`; diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.).
+2. **Scrollytelling.** Empieza con el púlsar CP 1919 (una línea que late con su periodo real, 1,3373 s) y el gráfico de Harold D. Craft Jr. de 1970 (fotos opcionales: si existen `assets/bell-radiotelescopio.jpg` y `assets/craft-1970.jpg` se muestran con su crédito; si no, quedan los enlaces a Alberto Areta y *Scientific American*). Después la portada se transforma en el disco entero (39 minutos) dibujado en 80 líneas de unos 30 segundos, que después se reordenan en las diez canciones; el texto recorre la historia del disco mientras el gráfico cambia.
 3. **Reproductor.** Al final, el gráfico funciona como reproductor del disco, con un vúmetro en la línea que suena.
 
 - **Diez líneas, diez canciones.** Cada línea es una canción, en el orden del disco (cara *Outside* arriba, *Inside* abajo). Como en la portada, es plana a los lados y en el centro se levanta la canción: primero su forma de onda y, para compararlas, sonoridad, brillo, graves o pulso. Con los botones de atributo se dibuja junto a cada línea, como una barra, un valor de ReccoBeats (energía, valencia, bailabilidad, instrumentalidad o acústica) para comparar las canciones. La parte central puede tener la misma anchura para todas o la duración real.
@@ -40,6 +40,6 @@ Para verla en local: `python3 -m http.server` en esta carpeta y abrir `http://lo
 
 ## Fuentes
 
-Wikipedia (*Unknown Pleasures*), Jen Christiansen en *Scientific American* (2015), Big Think, Universidad de Cambridge, Claus Wilke (*Goodbye joyplots*, 2017) y ReccoBeats. Enlaces completos al final de la página.
+Wikipedia (*Unknown Pleasures*), Alberto Areta (*Danza SR B1919+21*), Jen Christiansen en *Scientific American* (2015), Big Think, Universidad de Cambridge, Claus Wilke (*Goodbye joyplots*, 2017) y ReccoBeats. Enlaces completos al final de la página.
 
 Hecho con [D3](https://d3js.org). Por Javi Cantón-Correa · [javiercanton.com](https://javiercanton.com)

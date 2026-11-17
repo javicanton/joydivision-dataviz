@@ -165,14 +165,14 @@
   }
 
   // ---------- De la portada al disco ----------
-  // 1) "original": la portada del disco (assets/cover.png), entera y centrada.
+  // 1) "original": la portada del disco (assets/cover.jpg), entera y centrada.
   // 2) "album": la imagen se amplía hasta que el bloque de líneas de la portada ocupa el mismo sitio que
   //    el disco dibujado en 80 líneas (80 tramos de unos 30 segundos, con la forma de onda de cada uno),
   //    que aparece en su lugar con las mismas proporciones: líneas planas a los lados y picos en el centro.
   // 3) "songs": cada tramo se desplaza y se estira hasta la línea de su canción.
   const A80 = data.album80;
   // Posición del bloque de líneas dentro de la imagen de la portada (fracción del lado de la imagen)
-  const COVER_BOX = { x0: 0.297, x1: 0.725, y0: 0.216, y1: 0.771 };
+  const COVER_BOX = { x0: 0.309, x1: 0.682, y0: 0.249, y1: 0.725 };
   const BOX_RATIO = (COVER_BOX.y1 - COVER_BOX.y0) / (COVER_BOX.x1 - COVER_BOX.x0);
   const ZONE_FRAC = 0.62;                  // parte central de cada línea donde está el sonido
   // bloque de 80 líneas en el gráfico: tan alto como cabe y con la proporción del de la portada
@@ -198,7 +198,7 @@
   const imgAt = big => big
     ? { x: BX0 - COVER_BOX.x0 * IMG1, y: BY0 - COVER_BOX.y0 * IMG1, s: IMG1 }
     : { x: CX - IMG0 / 2, y: (H - IMG0) / 2, s: IMG0 };
-  const coverImg = originalLayer.append("image").attr("href", "assets/cover.png").attr("preserveAspectRatio", "xMidYMid meet");
+  const coverImg = originalLayer.append("image").attr("href", "assets/cover.jpg").attr("preserveAspectRatio", "xMidYMid meet");
   const placeImg = (sel, big) => { const p = imgAt(big); sel.attr("x", p.x).attr("y", p.y).attr("width", p.s).attr("height", p.s); };
   placeImg(coverImg, false);
   // El púlsar: una sola línea que late con el periodo real de CP 1919 (la forma del pulso es esquemática)
