@@ -10,7 +10,7 @@ rf = json.load(open(os.path.join(WEB, "data-raw", "reccobeats.json"), encoding="
 prof = json.load(open(os.path.join(WEB, "data-raw", "profiles.json"), encoding="utf-8"))
 PITCH = ["C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B"]
 FEATS = ["energy", "valence", "danceability", "instrumentalness", "acousticness", "speechiness", "liveness"]
-PROFILES = ["loudness", "brightness", "bass", "onset"]
+PROFILES = ["wave", "loudness", "brightness", "bass", "onset"]
 # n, id, título, cara (1 Outside, 2 Inside), duración en el LP (Wikipedia)
 T = [(1, "disorder", "Disorder", 1, "3:36"), (2, "day-of-the-lords", "Day of the Lords", 1, "4:48"),
      (3, "candidate", "Candidate", 1, "3:05"), (4, "insight", "Insight", 1, "4:30"),

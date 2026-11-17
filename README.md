@@ -1,17 +1,19 @@
 # Unknown Pleasures · reportaje con datos
 
+**Ver la página: https://javicanton.github.io/joydivision-dataviz/**
+
 Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el primer disco de Joy Division, para escuchar mientras se lee.
 
-- **Diez líneas, diez canciones.** Cada línea es una canción, en el orden del disco (cara *Outside* arriba, *Inside* abajo), y su relieve es un dato medido sobre el audio: sonoridad, brillo, graves o pulso. Se puede ver con la misma anchura para todas o con su duración real.
-- **Las líneas son el reproductor.** Al pulsar una línea suena la canción desde ese punto. Mientras suena, su línea se convierte en su vúmetro: el espectro de cada instante, con los graves a la izquierda y los agudos a la derecha.
+- **Diez líneas, diez canciones.** Cada línea es una canción, en el orden del disco (cara *Outside* arriba, *Inside* abajo). Como en la portada, es plana a los lados y en el centro se levanta la canción: primero su forma de onda y, para compararlas, sonoridad, brillo, graves o pulso. Junto a cada línea se puede mostrar un atributo de ReccoBeats (energía, valencia...). La parte central puede tener la misma anchura para todas o la duración real.
+- **Las líneas son el reproductor.** Al pulsar una línea suena la canción desde ese punto. Mientras suena, su línea se convierte en su vúmetro: el espectro de cada instante en 128 bandas (escala mel), con los graves a la izquierda, los agudos a la derecha y una línea punteada que retiene los picos.
 - **Scrollytelling.** El texto recorre la historia del disco (Salford, Factory, la grabación con Martin Hannett, la portada del púlsar CP 1919, su recepción y su legado, y el nombre *joyplot*) y cambia el gráfico, fijo a un lado, en cada paso. El disco puede sonar de fondo de principio a fin.
 
 ## Datos
 
 | Archivo | Qué contiene | Cómo se genera |
 |---|---|---|
-| `data/unknown-pleasures.json` | Canciones, perfiles (200 puntos por dato), atributos de ReccoBeats, identificadores de Spotify | `scripts/build_data.py` |
-| `data/vu/NN.bin` | Espectro para el vúmetro: 15 fotogramas por segundo, 32 bandas de 40 Hz a 11 kHz, un byte por banda | `scripts/analyze_audio.py` |
+| `data/unknown-pleasures.json` | Canciones, forma de onda y perfiles (400 puntos por dato), atributos de ReccoBeats, identificadores de Spotify | `scripts/build_data.py` |
+| `data/vu/NN.bin.gz` | Espectro para el vúmetro: 30 fotogramas por segundo, 128 bandas mel de 30 Hz a 16 kHz, un byte por banda, con gzip (el navegador lo descomprime) | `scripts/analyze_audio.py` |
 | `data/reccobeats-features.csv` | Atributos sonoros (energía, valencia, instrumentalidad...) de la edición 2019 Digital Master | `scripts/build_data.py` |
 | `data-raw/` | Datos intermedios: perfiles del audio y respuesta de ReccoBeats | `analyze_audio.py`, `fetch_reccobeats.py` |
 

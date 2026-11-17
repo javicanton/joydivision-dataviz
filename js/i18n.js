@@ -3,20 +3,21 @@
    metric (dato de las líneas), mode (equal | real), focus (canciones destacadas),
    feature (atributo de ReccoBeats que se muestra junto a cada línea). */
 window.STEPS = [
-  { id: "intro",      metric: "loudness",   mode: "equal", focus: [] },
-  { id: "read",       metric: "loudness",   mode: "equal", focus: [] },
-  { id: "salford",    metric: "loudness",   mode: "equal", focus: [] },
-  { id: "factory",    metric: "loudness",   mode: "real",  focus: [] },
+  { id: "intro",      metric: "wave",       mode: "equal", focus: [] },
+  { id: "read",       metric: "wave",       mode: "equal", focus: [] },
+  { id: "compare",    metric: "loudness",   mode: "equal", focus: [] },
+  { id: "salford",    metric: "wave",       mode: "equal", focus: [] },
+  { id: "factory",    metric: "wave",       mode: "real",  focus: [] },
   { id: "strawberry", metric: "brightness", mode: "real",  focus: ["insight"] },
   { id: "band",       metric: "bass",       mode: "real",  focus: ["wilderness", "disorder"] },
   { id: "nothing",    metric: "brightness", mode: "real",  focus: ["i-remember-nothing"] },
   { id: "control",    metric: "onset",      mode: "real",  focus: ["shes-lost-control"], feature: "instrumentalness" },
   { id: "joyful",     metric: "loudness",   mode: "real",  focus: ["disorder", "interzone"], feature: "valence" },
-  { id: "cover",      metric: "loudness",   mode: "equal", focus: [] },
-  { id: "release",    metric: "onset",      mode: "equal", focus: [] },
-  { id: "legacy",     metric: "bass",       mode: "equal", focus: [] },
-  { id: "ridgeline",  metric: "onset",      mode: "equal", focus: [] },
-  { id: "explore",    metric: "loudness",   mode: "real",  focus: [] }
+  { id: "cover",      metric: "wave",       mode: "equal", focus: [] },
+  { id: "release",    metric: "wave",       mode: "equal", focus: [] },
+  { id: "legacy",     metric: "onset",      mode: "equal", focus: [] },
+  { id: "ridgeline",  metric: "wave",       mode: "equal", focus: [] },
+  { id: "explore",    metric: "wave",       mode: "real",  focus: [] }
 ];
 
 window.I18N = {
@@ -25,6 +26,7 @@ window.I18N = {
     pageTitle: "Unknown Pleasures (Joy Division) · reportaje con datos",
     vizTitle: "Unknown Pleasures, Joy Division: cada línea es una canción",
     metrics: {
+      wave: ["Onda", "forma de onda: el pico de amplitud de cada instante"],
       loudness: ["Sonoridad", "volumen percibido a lo largo de la canción"],
       brightness: ["Brillo", "dónde se concentra el sonido: abajo (oscuro) o arriba (brillante)"],
       bass: ["Graves", "parte de la energía que queda por debajo de 250 Hz"],
@@ -37,7 +39,7 @@ window.I18N = {
     modes: { equal: "Misma anchura", real: "Duración real" },
     sides: { 1: "Outside", 2: "Inside" },
     sideName: { 1: "Cara A", 2: "Cara B" },
-    start: "inicio", end: "final", min: "min",
+    start: "inicio", end: "final", min: "min", featureNone: "Atributo (ReccoBeats)", oneMin: "1 min",
     play: "Reproducir", pause: "Pausa", listenAlbum: "▶ Escuchar el disco", pauseAlbum: "❚❚ Pausar el disco",
     playing: "Suena", vuHint: "La línea que suena muestra su espectro: graves a la izquierda, agudos a la derecha.",
     sourceLocal: "MP3 locales", sourceSpotify: "Spotify",
@@ -56,14 +58,17 @@ window.I18N = {
         <p><button type="button" class="btn" data-action="album"></button></p>
         <p class="note" id="source-note"></p>`,
       read: `<h2>Cómo leer las líneas</h2>
-        <p>Cada línea es una canción, en el orden del disco: arriba la cara <i>Outside</i> (1 a 5) y abajo la cara <i>Inside</i> (6 a 10). De izquierda a derecha, la línea va del principio al final de la canción, y su altura marca un dato medido sobre el audio. Ahora, la <b>sonoridad</b>.</p>
-        <p>Mientras una canción suena, su línea deja de mostrar el dato y se convierte en un <b>vúmetro</b>: su espectro en cada instante, con los graves a la izquierda y los agudos a la derecha.</p>`,
+        <p>Cada línea es una canción, en el orden del disco: arriba la cara <i>Outside</i> (1 a 5) y abajo la cara <i>Inside</i> (6 a 10). Como en la portada, cada línea es plana a los lados y en el centro se levanta la canción, de principio a fin: su <b>forma de onda</b>, el pico de amplitud de cada instante.</p>
+        <p>Mientras una canción suena, su línea se convierte en un <b>vúmetro</b>: su espectro en cada instante, con los graves a la izquierda y los agudos a la derecha.</p>`,
+      compare: `<h2>Diez canciones, cuatro medidas</h2>
+        <p>La forma de onda dice cuándo suena fuerte cada canción. Para compararlas, las líneas pueden mostrar otras cuatro medidas calculadas sobre el audio, todas en la misma escala para el disco entero: <b>sonoridad</b>, <b>brillo</b> (si el sonido se concentra en los agudos), <b>graves</b> y <b>pulso</b> (la fuerza de los ataques).</p>
+        <p>Junto a cada línea se puede mostrar además un atributo de ReccoBeats, como la energía o la valencia: un solo número por canción.</p>`,
       salford: `<h2>Salford, 1976</h2>
         <p>Bernard Sumner y Peter Hook vieron a los Sex Pistols en el Lesser Free Trade Hall de Manchester el 4 de junio de 1976, y ese mismo año formaron un grupo en Salford. Ian Curtis se unió como cantante sin prueba y Stephen Morris llegó a la batería en agosto de 1977.</p>
         <p>Se llamaron Warsaw hasta finales de 1977, cuando cambiaron de nombre para no confundirse con otro grupo londinense. Tras un contrato con RCA del que pidieron salir, publicaron por su cuenta el EP <i>An Ideal for Living</i> en junio de 1978 y debutaron en televisión en <i>Granada Reports</i>, el programa de Tony Wilson.</p>`,
       factory: `<h2>Factory, FACT 10</h2>
         <p>Según Hook, una discográfica londinense les ofreció 70.000 libras. Su mánager, Rob Gretton, prefirió ir a Factory Records, el sello independiente de Wilson, que repartía los beneficios a medias con el grupo.</p>
-        <p>Gretton calculó que el disco costaría 8.000 libras; Wilson contaría en 2006 que acabó costando 18.000. Salió con el número de catálogo FACT 10. Con la duración real, las líneas muestran lo que dura cada canción: casi 40 minutos en total.</p>`,
+        <p>Gretton calculó que el disco costaría 8.000 libras; Wilson contaría en 2006 que acabó costando 18.000. Salió con el número de catálogo FACT 10. Con la duración real, la parte central de cada línea mide lo que dura su canción: casi 40 minutos en total.</p>`,
       strawberry: `<h2>Strawberry Studios, abril de 1979</h2>
         <p>El disco se grabó en tres fines de semana, del 1 al 17 de abril de 1979, en Strawberry Studios (Stockport), con Martin Hannett como productor y Chris Nagle como ingeniero.</p>
         <p>Hannett trabajó con varios retardos digitales AMS, un Marshall Time Modulator y ecos de cinta, y buscó sonidos en el ascensor del estudio y en un baño del sótano. La voz de Curtis en «Insight» se grabó a través de una línea telefónica para que sonara lejana.</p>
@@ -93,10 +98,10 @@ window.I18N = {
         <p>En 2017, la comunidad de ciencia de datos empezó a llamar <i>joyplot</i> a los gráficos de líneas superpuestas, en homenaje a esta portada. Claus Wilke publicó el paquete de R ggjoy y el nombre se extendió muy rápido.</p>
         <p>En septiembre de ese año, Wilke lo retiró: el nombre del grupo procede de una novela sobre los campos de concentración nazis. El paquete pasó a llamarse ggridges y el gráfico, <i>ridgeline plot</i> o gráfico de crestas, como el que acompaña este texto.</p>`,
       explore: `<h2>Explora</h2>
-        <p>Cambia el dato de las líneas, pasa a la duración real o pulsa cualquier línea para escuchar la canción desde ese punto. Mientras suena, la línea es su vúmetro; si pulsas sobre ella, saltas a ese momento.</p>
+        <p>Cambia el dato de las líneas, muestra un atributo junto a ellas, pasa a la duración real o pulsa cualquier línea para escuchar la canción desde ese punto. Mientras suena, la línea es su vúmetro; si pulsas sobre ella, saltas a ese momento.</p>
         <p class="note">Teclado: espacio para pausar, ← → para cambiar de canción.</p>`
     },
-    method: `<p><b>Audio.</b> Los perfiles y los vúmetros se calcularon con Python (librosa) sobre los MP3 de la edición en CD de 1993. Cada línea tiene 200 puntos; todos los datos usan la misma escala en las diez canciones, así que se pueden comparar entre sí. El vúmetro es el espectro precalculado (32 bandas entre 40 Hz y 11 kHz, 15 fotogramas por segundo), sincronizado con la posición de la reproducción.</p>
+    method: `<p><b>Audio.</b> La forma de onda, los perfiles y los vúmetros se calcularon con Python (librosa) sobre los MP3 de la edición en CD de 1993. Cada línea tiene 400 puntos; todos los datos usan la misma escala en las diez canciones, así que se pueden comparar entre sí. El vúmetro es el espectro precalculado (128 bandas en escala mel entre 30 Hz y 16 kHz, 30 fotogramas por segundo), sincronizado con la posición de la reproducción, con una marca de pico que retiene los máximos.</p>
       <p><b>Atributos.</b> Spotify cerró el acceso a sus atributos sonoros para los desarrolladores en noviembre de 2024. Los de esta página (energía, valencia, instrumentalidad...) son de ReccoBeats, que usa los mismos nombres y la misma escala con su propio análisis, para la edición 2019 Digital Master.</p>
       <p><b>Reproducción.</b> Spotify (canciones completas con la sesión iniciada) o, en local, los MP3 del disco.</p>`,
     sources: [
@@ -114,6 +119,7 @@ window.I18N = {
     pageTitle: "Unknown Pleasures (Joy Division) · a data story",
     vizTitle: "Unknown Pleasures, Joy Division: each line is a song",
     metrics: {
+      wave: ["Wave", "waveform: the amplitude peak at each moment"],
       loudness: ["Loudness", "perceived volume across the song"],
       brightness: ["Brightness", "where the sound sits: low (dark) or high (bright)"],
       bass: ["Bass", "share of the energy below 250 Hz"],
@@ -126,7 +132,7 @@ window.I18N = {
     modes: { equal: "Same width", real: "Real duration" },
     sides: { 1: "Outside", 2: "Inside" },
     sideName: { 1: "Side A", 2: "Side B" },
-    start: "start", end: "end", min: "min",
+    start: "start", end: "end", min: "min", featureNone: "Attribute (ReccoBeats)", oneMin: "1 min",
     play: "Play", pause: "Pause", listenAlbum: "▶ Listen to the album", pauseAlbum: "❚❚ Pause the album",
     playing: "Now playing", vuHint: "The playing line shows its spectrum: bass on the left, treble on the right.",
     sourceLocal: "Local MP3", sourceSpotify: "Spotify",
@@ -145,14 +151,17 @@ window.I18N = {
         <p><button type="button" class="btn" data-action="album"></button></p>
         <p class="note" id="source-note"></p>`,
       read: `<h2>How to read the lines</h2>
-        <p>Each line is a song, in album order: the <i>Outside</i> side on top (1 to 5) and the <i>Inside</i> side below (6 to 10). Left to right, the line runs from the start to the end of the song, and its height marks a value measured on the audio. Right now, <b>loudness</b>.</p>
-        <p>While a song plays, its line stops showing the data and becomes a <b>VU meter</b>: its spectrum at each moment, bass on the left and treble on the right.</p>`,
+        <p>Each line is a song, in album order: the <i>Outside</i> side on top (1 to 5) and the <i>Inside</i> side below (6 to 10). As on the cover, each line is flat at the sides and the song rises in the middle, from start to end: its <b>waveform</b>, the amplitude peak at each moment.</p>
+        <p>While a song plays, its line becomes a <b>VU meter</b>: its spectrum at each moment, bass on the left and treble on the right.</p>`,
+      compare: `<h2>Ten songs, four measures</h2>
+        <p>The waveform tells you when each song is loud. To compare them, the lines can show four other measures computed from the audio, all on the same scale across the album: <b>loudness</b>, <b>brightness</b> (whether the sound sits in the treble), <b>bass</b> and <b>pulse</b> (the strength of the attacks).</p>
+        <p>Next to each line you can also show a ReccoBeats attribute, such as energy or valence: one number per song.</p>`,
       salford: `<h2>Salford, 1976</h2>
         <p>Bernard Sumner and Peter Hook saw the Sex Pistols at Manchester's Lesser Free Trade Hall on 4 June 1976, and that same year they formed a band in Salford. Ian Curtis joined as singer without an audition, and Stephen Morris took over the drums in August 1977.</p>
         <p>They were called Warsaw until late 1977, when they changed the name to avoid confusion with a London band. After an RCA deal they asked to leave, they self-released the <i>An Ideal for Living</i> EP in June 1978 and made their TV debut on Tony Wilson's <i>Granada Reports</i>.</p>`,
       factory: `<h2>Factory, FACT 10</h2>
         <p>According to Hook, a London label offered them £70,000. Their manager, Rob Gretton, went instead to Factory Records, Wilson's independent label, which split profits 50/50 with the band.</p>
-        <p>Gretton estimated the album would cost £8,000; Wilson said in 2006 it ended up costing £18,000. It came out as catalogue number FACT 10. In real-duration mode the lines show how long each song lasts: almost 40 minutes in all.</p>`,
+        <p>Gretton estimated the album would cost £8,000; Wilson said in 2006 it ended up costing £18,000. It came out as catalogue number FACT 10. In real-duration mode the middle of each line is as long as its song: almost 40 minutes in all.</p>`,
       strawberry: `<h2>Strawberry Studios, April 1979</h2>
         <p>The album was recorded over three weekends, from 1 to 17 April 1979, at Strawberry Studios (Stockport), produced by Martin Hannett with Chris Nagle as engineer.</p>
         <p>Hannett used several AMS digital delays, a Marshall Time Modulator and tape echo, and looked for sounds in the studio lift and a basement toilet. Curtis's vocal on "Insight" was recorded down a telephone line to make it sound distant.</p>
@@ -182,10 +191,10 @@ window.I18N = {
         <p>In 2017 the data science community started calling stacked line charts <i>joyplots</i>, in tribute to this cover. Claus Wilke released the ggjoy R package and the name spread fast.</p>
         <p>In September that year, Wilke retired it: the band's name comes from a novel about the Nazi concentration camps. The package became ggridges and the chart a <i>ridgeline plot</i>, like the one beside this text.</p>`,
       explore: `<h2>Explore</h2>
-        <p>Change the data on the lines, switch to real duration or click any line to hear the song from that point. While it plays, the line is its VU meter; click on it to jump to that moment.</p>
+        <p>Change the data on the lines, show an attribute beside them, switch to real duration or click any line to hear the song from that point. While it plays, the line is its VU meter; click on it to jump to that moment.</p>
         <p class="note">Keyboard: space to pause, ← → to change song.</p>`
     },
-    method: `<p><b>Audio.</b> The profiles and VU meters were computed in Python (librosa) from the MP3s of the 1993 CD edition. Each line has 200 points; every value uses the same scale across the ten songs, so they can be compared. The VU meter is the precomputed spectrum (32 bands from 40 Hz to 11 kHz, 15 frames per second), synced to the playback position.</p>
+    method: `<p><b>Audio.</b> The waveform, profiles and VU meters were computed in Python (librosa) from the MP3s of the 1993 CD edition. Each line has 400 points; every value uses the same scale across the ten songs, so they can be compared. The VU meter is the precomputed spectrum (128 mel bands from 30 Hz to 16 kHz, 30 frames per second), synced to the playback position, with a peak-hold trace.</p>
       <p><b>Attributes.</b> Spotify closed developer access to its audio features in November 2024. The ones on this page (energy, valence, instrumentalness...) come from ReccoBeats, which uses the same names and scale with its own analysis, for the 2019 Digital Master edition.</p>
       <p><b>Playback.</b> Spotify (full songs when logged in) or, locally, the album's MP3s.</p>`,
     sources: null,   // se usan las de español

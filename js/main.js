@@ -1,21 +1,24 @@
 /* Unknown Pleasures (Joy Division) · reportaje con datos
    Cada línea es una canción y su relieve es un dato medido sobre el audio. Mientras una canción suena,
-   su línea se convierte en su vúmetro: el espectro precalculado (data/vu/NN.bin) sincronizado con la
-   reproducción. El texto del reportaje (js/i18n.js) cambia el estado del gráfico al hacer scroll. */
+   su línea se convierte en su vúmetro: el espectro precalculado (data/vu/NN.bin.gz) sincronizado con la
+   reproducción. Como en la portada, las líneas son planas a los lados y la canción se levanta en el centro. El texto del reportaje (js/i18n.js) cambia el estado del gráfico al hacer scroll. */
 (async function () {
   "use strict";
 
   const params = new URLSearchParams(location.search);
   const STEPS = window.STEPS;
-  const METRICS = ["loudness", "brightness", "bass", "onset"];
+  const METRICS = ["wave", "loudness", "brightness", "bass", "onset"];
+  const FEATURES = ["energy", "valence", "danceability", "instrumentalness", "acousticness", "speechiness", "liveness"];
 
   // ---------- Geometría ----------
   const narrowMq = window.matchMedia("(max-width: 820px)"), NARROW = narrowMq.matches;
+  // W: anchura de cada línea (plana de 0 a W) · ZW: anchura de la zona central donde se levanta la canción
   const G = NARROW
-    ? { W: 420, X0: 28, X1: 380, GAP: 27, SIDE_GAP: 22, AMP: 74, VU: 92 }
-    : { W: 760, X0: 210, X1: 680, GAP: 40, SIDE_GAP: 30, AMP: 110, VU: 140 };
-  const { W, X0, X1, GAP, SIDE_GAP, AMP } = G;
-  const TOP = AMP + 36;
+    ? { W: 420, ZW: 300, GAP: 25, SIDE_GAP: 20, AMP: 80, VU: 96 }
+    : { W: 760, ZW: 410, GAP: 38, SIDE_GAP: 28, AMP: 105, VU: 150 };
+  const { W, ZW, GAP, SIDE_GAP, AMP } = G;
+  const CX = W / 2;
+  const TOP = AMP + 40;
 
   const data = await d3.json("data/unknown-pleasures.json");
   const tracks = data.tracks;
@@ -26,7 +29,7 @@
 
   const state = {
     lang: params.get("lang") === "en" || (!params.get("lang") && !(navigator.language || "es").toLowerCase().startsWith("es")) ? "en" : "es",
-    metric: "loudness", mode: "equal", focus: [], feature: null, step: null, hover: null
+    metric: "wave", mode: "equal", focus: [], feature: null, step: null, hover: null
   };
   const T = () => window.I18N[state.lang];
   const fmt = (v, k = 2) => v.toFixed(k).replace(".", state.lang === "es" ? "," : ".");
@@ -37,35 +40,39 @@
   const tip = d3.select("#tip");
 
   // ---------- Escalas ----------
-  const xEnd = d => (state.mode === "real" ? X0 + (X1 - X0) * d.mp3_seconds / maxS : X1);
+  // zona central de cada canción: misma anchura para todas o proporcional a su duración, siempre centrada
+  const zoneW = d => (state.mode === "real" ? ZW * d.mp3_seconds / maxS : ZW);
+  const xStart = d => CX - zoneW(d) / 2;
+  const xEnd = d => CX + zoneW(d) / 2;
   const prof = d => d.profiles[state.metric];
-  const xAt = (d, i, n) => X0 + (xEnd(d) - X0) * i / (n - 1);
-  const line = d3.line().curve(d3.curveBasis);
-  const ptsData = d => prof(d).map((v, i, a) => [xAt(d, i, a.length), base(d) - v * AMP]);
+  const xAt = (d, i, n) => xStart(d) + zoneW(d) * i / (n - 1);
+  const line = d3.line().curve(d3.curveLinear);
+  // cada línea: tramo plano, la canción y otro tramo plano. Siempre el mismo número de puntos,
+  // para que las transiciones entre datos y modos interpolen bien.
+  const withFlats = (pts, d) => [[0, base(d)], [xStart(d), base(d)], ...pts, [xEnd(d), base(d)], [W, base(d)]];
+  const ptsData = d => withFlats(prof(d).map((v, i, a) => [xAt(d, i, a.length), base(d) - v * AMP]), d);
   const linePath = pts => line(pts);
-  const fillPath = (pts, d) => line(pts) + `L${xEnd(d)},${base(d)}L${X0},${base(d)}Z`;
+  const fillPath = (pts, d) => line(pts) + `L${W},${base(d) + 1}L0,${base(d) + 1}Z`;
 
   // ---------- Dibujo ----------
   const axis = svg.append("g").attr("class", "axis");
   const labels = svg.append("g");
   const ridges = svg.selectAll(".ridge").data(tracks).join("g").attr("class", "ridge").attr("data-id", d => d.id);
-  ridges.append("line").attr("class", "base").attr("x1", X0).attr("y1", base).attr("y2", base);
   ridges.append("path").attr("class", "fill");
   ridges.append("path").attr("class", "line");
-  ridges.append("line").attr("class", "prog").attr("y1", base).attr("y2", base).style("display", "none");
+  ridges.append("line").attr("class", "prog").style("display", "none");
   ridges.append("line").attr("class", "head").style("display", "none");
   ridges.append("text").attr("class", "htime").style("display", "none");
-  ridges.append("text").attr("class", "num").attr("x", 0).attr("y", d => base(d) - 4).text(d => pad(d.n));
-  if (!NARROW) ridges.append("text").attr("class", "name").attr("x", 30).attr("y", d => base(d) - 4).text(d => d.title.toUpperCase());
-  ridges.append("text").attr("class", "dur num").attr("x", W).attr("y", d => base(d) - 4).attr("text-anchor", "end");
+  ridges.append("text").attr("class", "num").attr("x", 0).attr("y", d => base(d) - 5).text(d => pad(d.n));
+  if (!NARROW) ridges.append("text").attr("class", "name").attr("x", 24).attr("y", d => base(d) - 5).text(d => d.title.toUpperCase());
+  ridges.append("text").attr("class", "dur num").attr("x", W).attr("y", d => base(d) - 5).attr("text-anchor", "end");
+  ridges.append("path").attr("class", "peak").style("display", "none");
   ridges.append("line").attr("class", "cursor").style("display", "none");
   ridges.append("circle").attr("class", "dot").attr("r", 2.6).style("display", "none");
   ridges.append("rect").attr("class", "hit").attr("x", 0).attr("width", W)
     .attr("y", d => base(d) - GAP).attr("height", GAP).attr("tabindex", 0).attr("role", "button");
 
   function geometry(animate) {
-    const sel = animate ? ridges.transition().duration(700).ease(d3.easeCubicInOut) : ridges;
-    sel.select(".base").attr("x2", xEnd);
     // la línea que suena la dibuja el vúmetro
     const idle = animate ? ridges.filter(d => d.id !== vuId()).transition().duration(700).ease(d3.easeCubicInOut) : ridges.filter(d => d.id !== vuId());
     idle.select(".line").attr("d", d => linePath(ptsData(d)));
@@ -78,6 +85,7 @@
     ridges.select(".dur").text(d => (f ? fmt(d.features[f]) : NARROW ? "" : mmss(d.mp3_seconds)))
       .classed("fval", !!f);
     labels.select(".col-label").text(f ? t.features[f] : "");
+    d3.select("#feature").property("value", f || "");
   }
 
   function renderLabels() {
@@ -85,24 +93,25 @@
     labels.selectAll("*").remove();
     if (!NARROW) [1, 2].forEach(s => {
       const first = tracks.find(d => d.side === s);
-      labels.append("text").attr("class", "side-label").attr("x", NARROW ? 0 : 30).attr("y", base(first) - GAP + 2).text(t.sides[s]);
+      labels.append("text").attr("class", "side-label").attr("x", 24).attr("y", base(first) - GAP + 4).text(t.sides[s]);
     });
-    labels.append("text").attr("class", "col-label").attr("x", W).attr("y", base(tracks[0]) - GAP + 2).attr("text-anchor", "end");
+    labels.append("text").attr("class", "col-label").attr("x", W).attr("y", base(tracks[0]) - GAP + 4).attr("text-anchor", "end");
     renderAxis();
   }
   function renderAxis() {
     const t = T(), y = H - 10;
     axis.selectAll("*").remove();
     if (state.mode === "equal") {
-      axis.append("text").attr("x", X0).attr("y", y).text(t.start);
-      axis.append("text").attr("x", X1).attr("y", y).attr("text-anchor", "end").text(t.end);
+      axis.append("text").attr("x", CX - ZW / 2).attr("y", y).attr("text-anchor", "middle").text(t.start);
+      axis.append("text").attr("x", CX + ZW / 2).attr("y", y).attr("text-anchor", "middle").text(t.end);
       return;
     }
-    const x = d3.scaleLinear([0, maxS], [X0, X1]);
-    d3.range(0, maxS + 1, 60).forEach(s => {
-      axis.append("line").attr("x1", x(s)).attr("x2", x(s)).attr("y1", y - 16).attr("y2", y - 10);
-      axis.append("text").attr("x", x(s)).attr("y", y).attr("text-anchor", s ? "middle" : "start").text(s ? s / 60 : `0 ${t.min}`);
-    });
+    // con la duración real, una barra de escala de un minuto
+    const w = ZW * 60 / maxS;
+    axis.append("line").attr("x1", CX - w / 2).attr("x2", CX + w / 2).attr("y1", y - 14).attr("y2", y - 14);
+    axis.append("line").attr("x1", CX - w / 2).attr("x2", CX - w / 2).attr("y1", y - 18).attr("y2", y - 10);
+    axis.append("line").attr("x1", CX + w / 2).attr("x2", CX + w / 2).attr("y1", y - 18).attr("y2", y - 10);
+    axis.append("text").attr("x", CX).attr("y", y).attr("text-anchor", "middle").text(t.oneMin);
   }
 
   function updateFocus() {
@@ -118,6 +127,9 @@
       `<button type="button" data-m="${m}" aria-pressed="${state.metric === m}" title="${t.metrics[m][1]}">${t.metrics[m][0]}</button>`).join(""));
     d3.select("#mode").html(["equal", "real"].map(m =>
       `<button type="button" data-mode="${m}" aria-pressed="${state.mode === m}">${t.modes[m]}</button>`).join(""));
+    d3.select("#feature").attr("aria-label", t.featureNone).html(`<option value="">${t.featureNone}</option>` +
+      FEATURES.map(f => `<option value="${f}"${state.feature === f ? " selected" : ""}>${t.features[f]}</option>`).join(""))
+      .on("change", function () { setChart({ feature: this.value || null }); });
     d3.selectAll("#metric button").on("click", function () { setChart({ metric: this.dataset.m }); });
     d3.selectAll("#mode button").on("click", function () { setChart({ mode: this.dataset.mode }); });
     renderCaption();
@@ -139,7 +151,7 @@
   }
 
   // ---------- Lectura con el puntero ----------
-  const fracAt = (d, mx) => Math.max(0, Math.min(1, (mx - X0) / (xEnd(d) - X0)));
+  const fracAt = (d, mx) => Math.max(0, Math.min(1, (mx - xStart(d)) / zoneW(d)));
   function showCursor(d, mx, ev) {
     const f = fracAt(d, mx), g = ridges.filter(r => r === d), t = T();
     hideCursor(true);
@@ -147,6 +159,8 @@
       if (ev) showTip(`${pad(d.n)} ${d.title} <span>→</span> ${mmss(f * d.mp3_seconds)}`, ev);
       return;
     }
+    const mxIn = mx >= xStart(d) && mx <= xEnd(d);
+    if (!mxIn) { if (ev) showTip(`${pad(d.n)} ${d.title} <span>· ${mmss(d.mp3_seconds)}</span>`, ev); return; }
     const a = prof(d), i = Math.round(f * (a.length - 1)), x = xAt(d, i, a.length), y = base(d) - a[i] * AMP;
     g.select(".cursor").attr("x1", x).attr("x2", x).attr("y1", base(d)).attr("y2", y).style("display", null);
     g.select(".dot").attr("cx", x).attr("cy", y).style("display", null);
@@ -168,7 +182,13 @@
       showCursor(d, d3.pointer(ev, svg.node())[0], ev.pointerType === "touch" ? null : ev);
     })
     .on("pointerleave", () => { state.hover = null; updateFocus(); hideCursor(); })
-    .on("click", function (ev, d) { player.play(d.id, fracAt(d, d3.pointer(ev, svg.node())[0])); })
+    .on("click", function (ev, d) {
+      // sobre la canción se salta a ese punto; sobre los tramos planos, desde el principio
+      const mx = d3.pointer(ev, svg.node())[0], inside = mx >= xStart(d) && mx <= xEnd(d);
+      if (inside) player.play(d.id, fracAt(d, mx));
+      else if (player.id === d.id) player.toggle();
+      else player.play(d.id, 0);
+    })
     .on("keydown", function (ev, d) {
       if (ev.key === "Enter") { ev.preventDefault(); player.play(d.id); }
       if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
@@ -204,12 +224,22 @@
       this.id = d.id; this.frac = frac || 0; this.dur = 0; this.ended = false; this.playing = false;
       loadVu(d);
       startVu(d);
-      if (this.source === "local") {
-        audio.src = "audio/" + encodeURIComponent(d.mp3);
+      if (this.source === "local") this.localLoad(d, frac);
+      else this.spotifyLoad(d, frac);
+      updatePlayerUI();
+    },
+    // El MP3 se carga entero como blob: así se puede saltar a cualquier punto aunque el servidor local
+    // no admita peticiones parciales (python -m http.server no las admite)
+    localLoad(d, frac) {
+      const id = d.id;
+      if (!this.blobs) this.blobs = new Map();
+      if (!this.blobs.has(id)) this.blobs.set(id, fetch("audio/" + encodeURIComponent(d.mp3)).then(r => r.blob()).then(b => URL.createObjectURL(b)));
+      this.blobs.get(id).then(url => {
+        if (this.id !== id) return;
+        audio.src = url;
         audio.addEventListener("loadedmetadata", () => { if (frac) audio.currentTime = frac * audio.duration; }, { once: true });
         audio.play().catch(() => { this.playing = false; updatePlayerUI(); });
-      } else this.spotifyLoad(d, frac);
-      updatePlayerUI();
+      });
     },
     toggle() {
       if (!this.id) return this.play(tracks[0].id);
@@ -292,53 +322,75 @@
   d3.select("#p-next").on("click", () => player.step(1));
 
   // ---------- Vúmetro ----------
+  // Espectro precalculado: VU.fps fotogramas por segundo y VU.bands bandas logarítmicas por fotograma,
+  // un byte por banda, comprimido con gzip. Entre dos fotogramas se interpola; cada banda sube al
+  // instante y cae despacio, como la aguja de un vúmetro, y una segunda línea retiene los picos.
   const VU = data.vu, vuCache = new Map();
-  let vu = null;                       // { id, frames, smooth }
+  const HOLD_MS = 600, PEAK_FALL = 0.012, RELEASE = 0.86, GAMMA = 1.35;
+  let vu = null;                       // { id, frames, smooth, peak, held, last }
   const vuId = () => (vu ? vu.id : null);
+  async function gunzip(buf) {
+    const u8 = new Uint8Array(buf);
+    // si el servidor ya lo ha descomprimido (Content-Encoding: gzip), los datos llegan en claro
+    if (u8[0] !== 0x1f || u8[1] !== 0x8b || typeof DecompressionStream === "undefined") return u8;
+    const out = await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
+    return new Uint8Array(out);
+  }
   function loadVu(d) {
-    if (!vuCache.has(d.id)) vuCache.set(d.id, fetch(`data/vu/${pad(d.n)}.bin`).then(r => r.arrayBuffer()).then(b => new Uint8Array(b)));
+    if (!vuCache.has(d.id)) {
+      vuCache.set(d.id, fetch(VU.file.replace("{nn}", pad(d.n))).then(r => r.arrayBuffer()).then(gunzip)
+        .catch(() => { vuCache.delete(d.id); return null; }));
+    }
     return vuCache.get(d.id);
   }
   function startVu(d) {
-    const prev = vu;
-    vu = { id: d.id, frames: null, smooth: new Float32Array(VU.bands) };
+    const prev = vu, B = VU.bands;
+    vu = { id: d.id, frames: null, smooth: new Float32Array(B), peak: new Float32Array(B), held: new Float64Array(B), last: 0 };
     loadVu(d).then(f => { if (vu && vu.id === d.id) vu.frames = f; });
+    if (d.n < tracks.length) loadVu(tracks[d.n]);          // la siguiente, por adelantado
     if (prev && prev.id !== d.id) {         // la canción anterior vuelve a mostrar su dato
       const g = ridges.filter(r => r.id === prev.id);
       g.select(".line").transition().duration(600).attr("d", r => linePath(ptsData(r)));
       g.select(".fill").transition().duration(600).attr("d", r => fillPath(ptsData(r), r));
-      g.selectAll(".prog, .head, .htime").style("display", "none");
+      g.selectAll(".prog, .head, .htime, .peak").style("display", "none");
     }
     ridges.filter(r => r.id === d.id).raise();
   }
-  function drawVu() {
+  function drawVu(now) {
     if (!vu) return;
     const d = byId.get(vu.id), g = ridges.filter(r => r.id === vu.id);
-    const frac = player.position(), x1 = xEnd(d), B = VU.bands;
-    if (vu.frames) {
-      const nf = vu.frames.length / B, pos = Math.min(nf - 1.001, frac * d.mp3_seconds * VU.fps);
+    const frac = player.position(), B = VU.bands, x0 = xStart(d), zw = zoneW(d), y0 = base(d);
+    const dt = vu.last ? Math.min(100, now - vu.last) : 16; vu.last = now;
+    const k60 = dt / 16.7;                  // pasos de 60 fps, para que la caída no dependa de la pantalla
+    if (vu.frames && player.playing) {
+      const nf = vu.frames.length / B, pos = Math.max(0, Math.min(nf - 1.001, frac * d.mp3_seconds * VU.fps));
       const i = Math.floor(pos), k = pos - i;
       for (let b = 0; b < B; b++) {
         const v = ((1 - k) * vu.frames[i * B + b] + k * vu.frames[(i + 1) * B + b]) / 255;
-        // subida inmediata y caída lenta, como la aguja de un vúmetro
-        vu.smooth[b] = player.playing ? Math.max(v, vu.smooth[b] * 0.9) : vu.smooth[b];
+        vu.smooth[b] = Math.max(v, vu.smooth[b] * Math.pow(RELEASE, k60));
+        if (vu.smooth[b] >= vu.peak[b]) { vu.peak[b] = vu.smooth[b]; vu.held[b] = now; }
+        else if (now - vu.held[b] > HOLD_MS) vu.peak[b] = Math.max(vu.smooth[b], vu.peak[b] - PEAK_FALL * k60);
       }
     }
-    const pts = [[X0, base(d)]];
-    for (let b = 0; b < B; b++) pts.push([X0 + (x1 - X0) * (b + 0.5) / B, base(d) - Math.pow(vu.smooth[b], 1.6) * G.VU]);
-    pts.push([x1, base(d)]);
-    g.select(".line").interrupt().attr("d", linePath(pts));
-    g.select(".fill").interrupt().attr("d", fillPath(pts, d));
-    // progreso sobre la línea base
-    const hx = X0 + (x1 - X0) * frac;
-    g.select(".prog").attr("x1", X0).attr("x2", hx).style("display", null);
-    g.select(".head").attr("x1", hx).attr("x2", hx).attr("y1", base(d) - 5).attr("y2", base(d) + 5).style("display", null);
-    g.select(".htime").attr("x", hx).attr("y", base(d) + 16).attr("text-anchor", frac > 0.85 ? "end" : "middle")
+    const xb = b => x0 + zw * (b + 0.5) / B, yv = v => y0 - Math.pow(v, GAMMA) * G.VU;
+    const pts = [];
+    for (let b = 0; b < B; b++) pts.push([xb(b), yv(vu.smooth[b])]);
+    const full = withFlats(pts, d);
+    g.select(".line").interrupt().attr("d", linePath(full));
+    g.select(".fill").interrupt().attr("d", fillPath(full, d));
+    let pk = "";
+    for (let b = 0; b < B; b++) pk += (b ? "L" : "M") + xb(b).toFixed(1) + "," + yv(vu.peak[b]).toFixed(1);
+    g.select(".peak").attr("d", pk).style("display", null);
+    // progreso sobre la línea base de la canción
+    const hx = x0 + zw * frac;
+    g.select(".prog").attr("x1", x0).attr("x2", hx).attr("y1", y0).attr("y2", y0).style("display", null);
+    g.select(".head").attr("x1", hx).attr("x2", hx).attr("y1", y0 - 5).attr("y2", y0 + 5).style("display", null);
+    g.select(".htime").attr("x", hx).attr("y", y0 + 16).attr("text-anchor", "middle")
       .text(mmss(frac * d.mp3_seconds)).style("display", null);
     d3.select("#p-time").text(`${mmss(frac * d.mp3_seconds)} / ${mmss(d.mp3_seconds)}`);
   }
-  (function tick() {
-    if (vu && !document.hidden) drawVu();
+  (function tick(now) {
+    if (vu && !document.hidden) drawVu(now || performance.now());
     requestAnimationFrame(tick);
   })();
 
