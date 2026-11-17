@@ -8,7 +8,7 @@
   const params = new URLSearchParams(location.search);
   const STEPS = window.STEPS;
   const METRICS = ["wave", "loudness", "brightness", "bass", "onset"];
-  const FEATURES = ["energy", "valence", "danceability", "instrumentalness", "acousticness", "speechiness", "liveness"];
+  const FEATURES = ["energy", "valence", "danceability", "instrumentalness", "acousticness"];
 
   // ---------- Geometría ----------
   const narrowMq = window.matchMedia("(max-width: 820px)"), NARROW = narrowMq.matches;
@@ -29,7 +29,7 @@
 
   const state = {
     lang: params.get("lang") === "en" || (!params.get("lang") && !(navigator.language || "es").toLowerCase().startsWith("es")) ? "en" : "es",
-    metric: "wave", mode: "equal", focus: [], feature: null, step: null, hover: null
+    metric: "wave", mode: "equal", focus: [], feature: null, step: null, hover: null, view: "songs"
   };
   const T = () => window.I18N[state.lang];
   const fmt = (v, k = 2) => v.toFixed(k).replace(".", state.lang === "es" ? "," : ".");
@@ -55,9 +55,12 @@
   const fillPath = (pts, d) => line(pts) + `L${W},${base(d) + 1}L0,${base(d) + 1}Z`;
 
   // ---------- Dibujo ----------
-  const axis = svg.append("g").attr("class", "axis");
-  const labels = svg.append("g");
-  const ridges = svg.selectAll(".ridge").data(tracks).join("g").attr("class", "ridge").attr("data-id", d => d.id);
+  // dos capas: el disco entero en 80 líneas (primer paso del reportaje) y las diez canciones
+  const albumLayer = svg.append("g").attr("class", "album80").style("opacity", 0);
+  const songsLayer = svg.append("g").attr("class", "songs-layer");
+  const axis = songsLayer.append("g").attr("class", "axis");
+  const labels = songsLayer.append("g");
+  const ridges = songsLayer.selectAll(".ridge").data(tracks).join("g").attr("class", "ridge").attr("data-id", d => d.id);
   ridges.append("path").attr("class", "fill");
   ridges.append("path").attr("class", "line");
   ridges.append("line").attr("class", "prog").style("display", "none");
@@ -67,6 +70,9 @@
   if (!NARROW) ridges.append("text").attr("class", "name").attr("x", 24).attr("y", d => base(d) - 5).text(d => d.title.toUpperCase());
   ridges.append("text").attr("class", "dur num").attr("x", W).attr("y", d => base(d) - 5).attr("text-anchor", "end");
   ridges.append("path").attr("class", "peak").style("display", "none");
+  // barra del atributo de ReccoBeats, sobre el tramo plano de la derecha
+  const FX0 = CX + ZW / 2 + (NARROW ? 8 : 16), FW = W - FX0 - (NARROW ? 26 : 44);
+  ridges.append("line").attr("class", "fbar").attr("x1", FX0).attr("x2", FX0).attr("y1", d => base(d)).attr("y2", d => base(d));
   ridges.append("line").attr("class", "cursor").style("display", "none");
   ridges.append("circle").attr("class", "dot").attr("r", 2.6).style("display", "none");
   ridges.append("rect").attr("class", "hit").attr("x", 0).attr("width", W)
@@ -84,8 +90,9 @@
     const f = state.feature, t = T();
     ridges.select(".dur").text(d => (f ? fmt(d.features[f]) : NARROW ? "" : mmss(d.mp3_seconds)))
       .classed("fval", !!f);
+    ridges.select(".fbar").transition().duration(600).ease(d3.easeCubicOut)
+      .attr("x2", d => FX0 + (f ? d.features[f] * FW : 0));
     labels.select(".col-label").text(f ? t.features[f] : "");
-    d3.select("#feature").property("value", f || "");
   }
 
   function renderLabels() {
@@ -127,9 +134,11 @@
       `<button type="button" data-m="${m}" aria-pressed="${state.metric === m}" title="${t.metrics[m][1]}">${t.metrics[m][0]}</button>`).join(""));
     d3.select("#mode").html(["equal", "real"].map(m =>
       `<button type="button" data-mode="${m}" aria-pressed="${state.mode === m}">${t.modes[m]}</button>`).join(""));
-    d3.select("#feature").attr("aria-label", t.featureNone).html(`<option value="">${t.featureNone}</option>` +
-      FEATURES.map(f => `<option value="${f}"${state.feature === f ? " selected" : ""}>${t.features[f]}</option>`).join(""))
-      .on("change", function () { setChart({ feature: this.value || null }); });
+    d3.select("#feature").attr("aria-label", t.featureNone).html(`<span class="lbl">${t.featureLabel}</span>` +
+      FEATURES.map(f => `<button type="button" data-f="${f}" aria-pressed="${state.feature === f}">${t.features[f]}</button>`).join(""));
+    d3.selectAll("#feature button").on("click", function () {
+      setChart({ feature: state.feature === this.dataset.f ? null : this.dataset.f });
+    });
     d3.selectAll("#metric button").on("click", function () { setChart({ metric: this.dataset.m }); });
     d3.selectAll("#mode button").on("click", function () { setChart({ mode: this.dataset.mode }); });
     renderCaption();
@@ -143,11 +152,46 @@
   }
   function setChart(next, animate = true) {
     const modeChanged = next.mode && next.mode !== state.mode;
+    const viewChanged = next.view && next.view !== state.view;
     Object.assign(state, next);
     renderControls();
     if (modeChanged) renderAxis();
     geometry(animate);
     updateFocus();
+    if (viewChanged || !animate) showView(animate);
+  }
+
+  // ---------- El disco entero en 80 líneas ----------
+  // Cada línea es un tramo de unos 30 segundos del disco encadenado. Se usa en la portada y en el primer
+  // paso del reportaje; al pasar a las canciones, cada tramo baja o sube hasta la línea de su canción.
+  const A80 = data.album80;
+  function album80Geom(h, amp) {
+    const yTop = amp + 8, gap = (h - 14 - yTop) / (A80.lines - 1);
+    return { y: i => yTop + i * gap, amp };
+  }
+  function drawAlbum80(g, width, h, amp, zw) {
+    const geo = album80Geom(h, amp), cx = width / 2;
+    const line80 = d3.line();
+    const rows = A80.values.map((vals, i) => {
+      const y = geo.y(i), x0 = cx - zw / 2;
+      const pts = [[0, y], [x0, y], ...vals.map((v, j) => [x0 + zw * j / (vals.length - 1), y - v * geo.amp]), [cx + zw / 2, y], [width, y]];
+      return { i, song: A80.song[i], d: line80(pts), f: line80(pts) + `L${width},${y + 1}L0,${y + 1}Z`, y };
+    });
+    const r = g.selectAll("g.r").data(rows).join("g").attr("class", "r");
+    r.append("path").attr("class", "f").attr("d", d => d.f);
+    r.append("path").attr("d", d => d.d);
+    return r;
+  }
+  const VIEW_AMP = NARROW ? 34 : 46;
+  const album80Rows = drawAlbum80(albumLayer, W, H, VIEW_AMP, ZW);
+  function showView(animate) {
+    const album = state.view === "album", dur = animate ? 900 : 0;
+    const geo = album80Geom(H, VIEW_AMP);
+    songsLayer.style("pointer-events", album ? "none" : null).transition().duration(dur).style("opacity", album ? 0 : 1);
+    albumLayer.interrupt().transition().duration(dur).style("opacity", album ? 1 : 0);
+    // cada tramo se desplaza hacia la línea de su canción (o vuelve a su sitio)
+    album80Rows.interrupt().transition().duration(dur).ease(d3.easeCubicInOut)
+      .attr("transform", d => (album ? null : `translate(0,${base(byId.get(tracks[d.song - 1].id)) - geo.y(d.i)})`));
   }
 
   // ---------- Lectura con el puntero ----------
@@ -412,7 +456,7 @@
     state.step = id;
     d3.selectAll(".step").classed("active", s => s.id === id);
     const s = STEPS.find(x => x.id === id);
-    setChart({ metric: s.metric, mode: s.mode, focus: s.focus || [], feature: s.feature || null });
+    setChart({ metric: s.metric, mode: s.mode, focus: s.focus || [], feature: s.feature || null, view: s.view || "songs" });
   }
   function observeSteps() {
     const io = new IntersectionObserver(entries => {
@@ -429,8 +473,19 @@
     d3.select("#credits").html(t.credits);
   }
 
+  // ---------- Portada ----------
+  const COVER = NARROW ? { W: 420, H: 470, AMP: 30, ZW: 270 } : { W: 640, H: 600, AMP: 42, ZW: 380 };
+  const coverSvg = d3.select("#cover-viz").attr("viewBox", `0 0 ${COVER.W} ${COVER.H}`);
+  coverSvg.append("g").attr("class", "album80").call(g => drawAlbum80(g, COVER.W, COVER.H, COVER.AMP, COVER.ZW));
+  function renderCover() {
+    const c = T().cover;
+    d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
+    d3.select("#c-byline").text(c.byline); d3.select("#cover-caption").text(c.caption); d3.select("#c-scroll").text(c.scroll);
+  }
+
   function renderAll() {
     const t = T();
+    renderCover();
     document.documentElement.lang = state.lang;
     document.title = t.pageTitle;
     d3.select("#viz-title").text(t.vizTitle);

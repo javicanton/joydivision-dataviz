@@ -3,7 +3,7 @@
    metric (dato de las líneas), mode (equal | real), focus (canciones destacadas),
    feature (atributo de ReccoBeats que se muestra junto a cada línea). */
 window.STEPS = [
-  { id: "intro",      metric: "wave",       mode: "equal", focus: [] },
+  { id: "pulses",     metric: "wave",       mode: "equal", focus: [], view: "album" },
   { id: "read",       metric: "wave",       mode: "equal", focus: [] },
   { id: "compare",    metric: "loudness",   mode: "equal", focus: [] },
   { id: "salford",    metric: "wave",       mode: "equal", focus: [] },
@@ -17,7 +17,7 @@ window.STEPS = [
   { id: "release",    metric: "wave",       mode: "equal", focus: [] },
   { id: "legacy",     metric: "onset",      mode: "equal", focus: [] },
   { id: "ridgeline",  metric: "wave",       mode: "equal", focus: [] },
-  { id: "explore",    metric: "wave",       mode: "real",  focus: [] }
+  { id: "listen",     metric: "wave",       mode: "equal", focus: [] }
 ];
 
 window.I18N = {
@@ -48,21 +48,27 @@ window.I18N = {
     at: "en", pick: "Pulsa de nuevo para soltarla",
     tipPlay: "Pulsa para escucharla desde aquí",
     reccobeats: "ReccoBeats",
-    explore: "Explora",
+    cover: {
+      kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
+      title: "<i>Unknown Pleasures</i>, dibujado con su propio sonido",
+      dek: "La portada del primer disco de Joy Division es un gráfico de datos: 80 pulsos de una estrella lejana. Medimos el audio de sus diez canciones y lo contamos con el mismo lenguaje, para leerlo, compararlo y escucharlo.",
+      byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
+      caption: "El disco entero (39 minutos) en 80 líneas de unos 30 segundos: cada una es la forma de onda de un tramo.",
+      scroll: "Desliza para empezar"
+    },
+    featureLabel: "Atributo",
     sourcesTitle: "Fuentes",
     methodTitle: "Cómo se hizo",
     steps: {
-      intro: `<p class="kicker">Joy Division · 1979</p>
-        <h1>Unknown Pleasures</h1>
-        <p class="lead">Diez canciones, diez líneas. Un recorrido por el primer disco de Joy Division mientras suena: cada línea es una canción y, cuando la escuchas, se convierte en su vúmetro.</p>
-        <p><button type="button" class="btn" data-action="album"></button></p>
-        <p class="note" id="source-note"></p>`,
+      pulses: `<h2>El disco entero en 80 líneas</h2>
+        <p>La portada de <i>Unknown Pleasures</i> apila 80 pulsos sucesivos de una estrella. Aquí hemos hecho lo mismo con el propio disco: sus 39 minutos, cortados en 80 tramos de unos 30 segundos. Cada línea es la forma de onda de un tramo, y de arriba abajo se lee el disco de principio a fin.</p>
+        <p>Los tramos planos son los silencios entre canciones; los picos, los momentos de más volumen. Ahora ordenamos esos tramos por canción.</p>`,
       read: `<h2>Cómo leer las líneas</h2>
         <p>Cada línea es una canción, en el orden del disco: arriba la cara <i>Outside</i> (1 a 5) y abajo la cara <i>Inside</i> (6 a 10). Como en la portada, cada línea es plana a los lados y en el centro se levanta la canción, de principio a fin: su <b>forma de onda</b>, el pico de amplitud de cada instante.</p>
         <p>Mientras una canción suena, su línea se convierte en un <b>vúmetro</b>: su espectro en cada instante, con los graves a la izquierda y los agudos a la derecha.</p>`,
       compare: `<h2>Diez canciones, cuatro medidas</h2>
         <p>La forma de onda dice cuándo suena fuerte cada canción. Para compararlas, las líneas pueden mostrar otras cuatro medidas calculadas sobre el audio, todas en la misma escala para el disco entero: <b>sonoridad</b>, <b>brillo</b> (si el sonido se concentra en los agudos), <b>graves</b> y <b>pulso</b> (la fuerza de los ataques).</p>
-        <p>Junto a cada línea se puede mostrar además un atributo de ReccoBeats, como la energía o la valencia: un solo número por canción.</p>`,
+        <p>Junto a cada línea se puede mostrar además un atributo de ReccoBeats, como la energía o la valencia: un solo número por canción, dibujado como una barra sobre el tramo plano de la derecha.</p>`,
       salford: `<h2>Salford, 1976</h2>
         <p>Bernard Sumner y Peter Hook vieron a los Sex Pistols en el Lesser Free Trade Hall de Manchester el 4 de junio de 1976, y ese mismo año formaron un grupo en Salford. Ian Curtis se unió como cantante sin prueba y Stephen Morris llegó a la batería en agosto de 1977.</p>
         <p>Se llamaron Warsaw hasta finales de 1977, cuando cambiaron de nombre para no confundirse con otro grupo londinense. Tras un contrato con RCA del que pidieron salir, publicaron por su cuenta el EP <i>An Ideal for Living</i> en junio de 1978 y debutaron en televisión en <i>Granada Reports</i>, el programa de Tony Wilson.</p>`,
@@ -97,8 +103,10 @@ window.I18N = {
       ridgeline: `<h2>Joyplot: un nombre para un gráfico</h2>
         <p>En 2017, la comunidad de ciencia de datos empezó a llamar <i>joyplot</i> a los gráficos de líneas superpuestas, en homenaje a esta portada. Claus Wilke publicó el paquete de R ggjoy y el nombre se extendió muy rápido.</p>
         <p>En septiembre de ese año, Wilke lo retiró: el nombre del grupo procede de una novela sobre los campos de concentración nazis. El paquete pasó a llamarse ggridges y el gráfico, <i>ridgeline plot</i> o gráfico de crestas, como el que acompaña este texto.</p>`,
-      explore: `<h2>Explora</h2>
-        <p>Cambia el dato de las líneas, muestra un atributo junto a ellas, pasa a la duración real o pulsa cualquier línea para escuchar la canción desde ese punto. Mientras suena, la línea es su vúmetro; si pulsas sobre ella, saltas a ese momento.</p>
+      listen: `<h2>Escucha el disco</h2>
+        <p>El gráfico es ahora el reproductor. Pulsa cualquier línea para escuchar la canción desde ese punto, o reproduce el disco entero, en orden, como en el vinilo. Mientras suena, la línea es su vúmetro: el espectro de cada instante, con los graves a la izquierda y los agudos a la derecha, y una línea punteada que retiene los picos.</p>
+        <p><button type="button" class="btn" data-action="album"></button></p>
+        <p class="note" id="source-note"></p>
         <p class="note">Teclado: espacio para pausar, ← → para cambiar de canción.</p>`
     },
     method: `<p><b>Audio.</b> La forma de onda, los perfiles y los vúmetros se calcularon con Python (librosa) sobre los MP3 de la edición en CD de 1993. Cada línea tiene 400 puntos; todos los datos usan la misma escala en las diez canciones, así que se pueden comparar entre sí. El vúmetro es el espectro precalculado (128 bandas en escala mel entre 30 Hz y 16 kHz, 30 fotogramas por segundo), sincronizado con la posición de la reproducción, con una marca de pico que retiene los máximos.</p>
@@ -141,21 +149,27 @@ window.I18N = {
     at: "at", pick: "Click again to release",
     tipPlay: "Click to listen from here",
     reccobeats: "ReccoBeats",
-    explore: "Explore",
+    cover: {
+      kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
+      title: "<i>Unknown Pleasures</i>, drawn with its own sound",
+      dek: "The cover of Joy Division's debut album is a data chart: 80 pulses from a distant star. We measured the audio of its ten songs and tell their story in the same language, to read, compare and listen.",
+      byline: "Javi Cantón-Correa · 17 November 2026",
+      caption: "The whole album (39 minutes) in 80 lines of about 30 seconds: each one is the waveform of one stretch.",
+      scroll: "Scroll to begin"
+    },
+    featureLabel: "Attribute",
     sourcesTitle: "Sources",
     methodTitle: "How it was made",
     steps: {
-      intro: `<p class="kicker">Joy Division · 1979</p>
-        <h1>Unknown Pleasures</h1>
-        <p class="lead">Ten songs, ten lines. A walk through Joy Division's debut album while it plays: each line is a song and, when you listen to it, it becomes its VU meter.</p>
-        <p><button type="button" class="btn" data-action="album"></button></p>
-        <p class="note" id="source-note"></p>`,
+      pulses: `<h2>The whole album in 80 lines</h2>
+        <p>The cover of <i>Unknown Pleasures</i> stacks 80 successive pulses from a star. Here we did the same with the album itself: its 39 minutes, cut into 80 stretches of about 30 seconds. Each line is the waveform of one stretch, and the album reads from top to bottom, start to end.</p>
+        <p>The flat stretches are the silences between songs; the peaks, the loudest moments. Now we sort those stretches by song.</p>`,
       read: `<h2>How to read the lines</h2>
         <p>Each line is a song, in album order: the <i>Outside</i> side on top (1 to 5) and the <i>Inside</i> side below (6 to 10). As on the cover, each line is flat at the sides and the song rises in the middle, from start to end: its <b>waveform</b>, the amplitude peak at each moment.</p>
         <p>While a song plays, its line becomes a <b>VU meter</b>: its spectrum at each moment, bass on the left and treble on the right.</p>`,
       compare: `<h2>Ten songs, four measures</h2>
         <p>The waveform tells you when each song is loud. To compare them, the lines can show four other measures computed from the audio, all on the same scale across the album: <b>loudness</b>, <b>brightness</b> (whether the sound sits in the treble), <b>bass</b> and <b>pulse</b> (the strength of the attacks).</p>
-        <p>Next to each line you can also show a ReccoBeats attribute, such as energy or valence: one number per song.</p>`,
+        <p>Next to each line you can also show a ReccoBeats attribute, such as energy or valence: one number per song, drawn as a bar on the flat stretch to the right.</p>`,
       salford: `<h2>Salford, 1976</h2>
         <p>Bernard Sumner and Peter Hook saw the Sex Pistols at Manchester's Lesser Free Trade Hall on 4 June 1976, and that same year they formed a band in Salford. Ian Curtis joined as singer without an audition, and Stephen Morris took over the drums in August 1977.</p>
         <p>They were called Warsaw until late 1977, when they changed the name to avoid confusion with a London band. After an RCA deal they asked to leave, they self-released the <i>An Ideal for Living</i> EP in June 1978 and made their TV debut on Tony Wilson's <i>Granada Reports</i>.</p>`,
@@ -190,8 +204,10 @@ window.I18N = {
       ridgeline: `<h2>Joyplot: a name for a chart</h2>
         <p>In 2017 the data science community started calling stacked line charts <i>joyplots</i>, in tribute to this cover. Claus Wilke released the ggjoy R package and the name spread fast.</p>
         <p>In September that year, Wilke retired it: the band's name comes from a novel about the Nazi concentration camps. The package became ggridges and the chart a <i>ridgeline plot</i>, like the one beside this text.</p>`,
-      explore: `<h2>Explore</h2>
-        <p>Change the data on the lines, show an attribute beside them, switch to real duration or click any line to hear the song from that point. While it plays, the line is its VU meter; click on it to jump to that moment.</p>
+      listen: `<h2>Listen to the album</h2>
+        <p>The chart is now the player. Click any line to hear the song from that point, or play the whole album, in order, as on the vinyl. While it plays, the line is its VU meter: the spectrum at each moment, bass on the left and treble on the right, with a dotted line that holds the peaks.</p>
+        <p><button type="button" class="btn" data-action="album"></button></p>
+        <p class="note" id="source-note"></p>
         <p class="note">Keyboard: space to pause, ← → to change song.</p>`
     },
     method: `<p><b>Audio.</b> The waveform, profiles and VU meters were computed in Python (librosa) from the MP3s of the 1993 CD edition. Each line has 400 points; every value uses the same scale across the ten songs, so they can be compared. The VU meter is the precomputed spectrum (128 mel bands from 30 Hz to 16 kHz, 30 frames per second), synced to the playback position, with a peak-hold trace.</p>

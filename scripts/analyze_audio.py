@@ -9,6 +9,8 @@ Salidas (dentro de la carpeta web):
       onset      pulso (fuerza de los ataques: golpes de batería, púas, consonantes)
       flux       cambio (variación del espectro de un instante a otro)
       wave       forma de onda (pico de amplitud de cada tramo, sin suavizar)
+    y "album": el disco entero, con sus pausas, partido en ALBUM_LINES tramos iguales de
+    ALBUM_POINTS picos cada uno (la portada de la página).
     Todas comparten escala entre canciones, así que se pueden comparar.
   - data/vu/NN.bin.gz: espectro para el vúmetro, FPS fotogramas por segundo y BANDS bandas en escala
     mel (30 Hz a 16 kHz) por fotograma, un byte por banda (0-255), comprimido con gzip.
@@ -25,6 +27,8 @@ SR, HOP, NFFT = 44100, 1024, 4096
 N = 400          # puntos por serie
 FPS = 30         # fotogramas del vúmetro por segundo
 BANDS = 128
+ALBUM_LINES, ALBUM_POINTS = 80, 160
+FINE = 0.02      # segundos por pico en la forma de onda del disco entero
 
 files = sorted(glob.glob(os.path.join(glob.escape(SRC), "[0-9][0-9] *.mp3")))
 assert len(files) == 10, files
@@ -37,7 +41,7 @@ def reduce(x, n, fn=np.mean):
     e = np.linspace(0, len(x), n + 1).astype(int)
     return np.array([fn(x[a:max(b, a + 1)]) for a, b in zip(e[:-1], e[1:])])
 
-raw, vu, meta = {}, {}, {}
+raw, vu, meta, fine = {}, {}, {}, {}
 for f in files:
     n = int(os.path.basename(f)[:2])
     y, _ = librosa.load(f, sr=SR, mono=True)
@@ -58,6 +62,8 @@ for f in files:
         "flux": reduce(flux, N),
         "wave": reduce(np.abs(y), N, np.max),
     }
+    hop_f = int(FINE * SR)
+    fine[n] = np.abs(y[: len(y) // hop_f * hop_f]).reshape(-1, hop_f).max(1)
     tempo = float(np.atleast_1d(librosa.feature.tempo(onset_envelope=onset, sr=SR))[0])
     meta[n] = {"mp3": os.path.basename(f), "mp3_seconds": round(len(y) / SR, 2), "tempo_audio": round(tempo, 1)}
     # vúmetro: espectro por bandas, en dB
@@ -100,7 +106,24 @@ for n in vu:
     with gzip.open(os.path.join(WEB, "data", "vu", f"{n:02d}.bin.gz"), "wb", compresslevel=9) as fh:
         fh.write((q * 255).round().astype(np.uint8).tobytes())
 
+# El disco entero en ALBUM_LINES líneas: se encadenan las canciones y se reparte en tramos iguales
+seq = np.concatenate([fine[n] for n in sorted(fine)])
+song_of = np.concatenate([np.full(len(fine[n]), n) for n in sorted(fine)])
+L = len(seq) // (ALBUM_LINES * ALBUM_POINTS) * (ALBUM_LINES * ALBUM_POINTS)
+step = len(seq) / (ALBUM_LINES * ALBUM_POINTS)
+e = (np.arange(ALBUM_LINES * ALBUM_POINTS + 1) * step).astype(int)
+pk = np.array([seq[a:max(b, a + 1)].max() for a, b in zip(e[:-1], e[1:])]) / seq.max()
+lines = pk.reshape(ALBUM_LINES, ALBUM_POINTS)
+per_line = len(seq) / ALBUM_LINES
+album = {
+    "lines": ALBUM_LINES, "points": ALBUM_POINTS, "seconds_per_line": round(per_line * FINE, 2),
+    # canción que suena en la mitad de cada tramo, para la transición a las diez líneas
+    "song": [int(song_of[min(len(seq) - 1, int((i + 0.5) * per_line))]) for i in range(ALBUM_LINES)],
+    "values": [[round(float(v), 3) for v in row] for row in lines],
+}
+
 out = {
+    "album": album,
     "n_points": N, "vu": {"fps": FPS, "bands": BANDS, "hz": [round(float(e)) for e in edges], "file": "data/vu/{nn}.bin.gz"},
     "scales": scales,
     "tracks": {n: {**meta[n], **{k: [round(float(x), 3) for x in v] for k, v in raw[n].items()}} for n in raw},

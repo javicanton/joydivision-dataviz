@@ -35,7 +35,7 @@ data = {
     "album": {"title": "Unknown Pleasures", "artist": "Joy Division", "release": "1979-06-15", "label": "Factory Records",
               "catalogue": "FACT 10", "duration": "39:24", "spotify_album": "5Dgqy4bBg09Rdw7CQM545s",
               "spotify_edition": "Unknown Pleasures (2019 Digital Master)", "audio_edition": "CD 1993 (POCD-1879)"},
-    "vu": prof["vu"], "tracks": tracks,
+    "vu": prof["vu"], "album80": prof["album"], "tracks": tracks,
 }
 json.dump(data, open(os.path.join(WEB, "data", "unknown-pleasures.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 with open(os.path.join(WEB, "data", "reccobeats-features.csv"), "w", newline="", encoding="utf-8") as fh:

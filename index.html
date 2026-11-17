@@ -16,6 +16,18 @@
   <button type="button" data-lang="en">EN</button>
 </div>
 
+<header class="cover" id="cover">
+  <svg id="cover-viz" role="img" aria-labelledby="cover-caption"></svg>
+  <div class="cover-text">
+    <p class="kicker" id="c-kicker"></p>
+    <h1 id="c-title"></h1>
+    <p class="dek" id="c-dek"></p>
+    <p class="byline" id="c-byline"></p>
+    <p class="c-caption" id="cover-caption"></p>
+  </div>
+  <p class="scroll-cue" id="c-scroll"></p>
+</header>
+
 <main class="scrolly">
   <figure class="fig" id="fig">
     <svg id="viz" role="img" aria-labelledby="viz-title"><title id="viz-title"></title></svg>
@@ -23,7 +35,9 @@
       <div class="controls">
         <div class="seg" role="group" id="metric"></div>
         <div class="seg" role="group" id="mode"></div>
-        <select class="sel" id="feature"></select>
+      </div>
+      <div class="controls">
+        <div class="seg seg-f" role="group" id="feature"></div>
       </div>
       <p class="caption" id="caption" aria-live="polite"></p>
     </figcaption>

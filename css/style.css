@@ -22,6 +22,20 @@ button { font-family: inherit; }
 .lang button[aria-pressed="true"], .seg button[aria-pressed="true"] { color: var(--fg); }
 button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 
+/* ---------- Portada ---------- */
+.cover { min-height: 100vh; max-width: 980px; margin: 0 auto; padding: 7vh 24px 6vh; display: flex; flex-direction: column; align-items: center; }
+#cover-viz { display: block; width: min(100%, 640px); height: auto; max-height: 52vh; }
+.cover-text { max-width: 640px; text-align: center; margin-top: 4vh; }
+.cover .kicker { font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); margin: 0 0 16px; }
+.cover h1 { font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.1; letter-spacing: .02em; margin: 0 0 18px; }
+.cover .dek { font-family: var(--serif); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.55; color: #d4d4d4; margin: 0 0 18px; }
+.cover .byline { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin: 0 0 10px; }
+.cover .c-caption { font-size: 11.5px; line-height: 1.5; color: var(--dim); margin: 0; }
+.scroll-cue { margin-top: auto; padding-top: 4vh; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); }
+.scroll-cue::after { content: ""; display: block; width: 1px; height: 34px; background: var(--dim); margin: 10px auto 0; }
+.album80 path { fill: none; stroke: var(--fg); stroke-width: .9; }
+.album80 path.f { fill: var(--bg); stroke: none; }
+
 /* ---------- Scrollytelling: gráfico fijo a la izquierda, texto a la derecha ---------- */
 .scrolly { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 4vw; max-width: 1320px; margin: 0 auto; padding: 0 3vw; }
 .fig { position: sticky; top: 0; height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; }
@@ -29,15 +43,15 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 figcaption { margin-top: 10px; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .seg { display: flex; border: 1px solid var(--faint); }
-.sel {
-  background: var(--bg); color: var(--dim); border: 1px solid var(--faint); border-radius: 0; font: inherit; font-size: 11px;
-  letter-spacing: .1em; text-transform: uppercase; padding: 4px 6px; cursor: pointer;
-}
-.sel:focus-visible { outline: 1px solid var(--fg); }
+.seg-f { flex-wrap: wrap; justify-content: center; }
+.seg-f .lbl { color: var(--dim); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; padding: 6px 8px; border-right: 1px solid var(--faint); }
+.controls + .controls { margin-top: 8px; }
+.ridge .fbar { stroke: var(--fg); stroke-width: 3; }
 .caption { min-height: 2.8em; margin: 12px auto 0; max-width: 560px; text-align: center; font-size: 12px; line-height: 1.5; letter-spacing: .04em; color: var(--dim); }
 .caption b { color: var(--fg); font-weight: 400; }
 
 .steps { padding: 30vh 0 40vh; }
+.songs-layer { transition: opacity .6s; }
 .step { min-height: 92vh; display: flex; align-items: center; opacity: .28; transition: opacity .4s; }
 .step.active { opacity: 1; }
 .step .card { max-width: 440px; }
