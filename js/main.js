@@ -58,6 +58,7 @@
   // dos capas: el disco entero en 80 líneas (primer paso del reportaje) y las diez canciones
   // capa 0: la portada original (imagen); capa 1: el disco en 80 líneas; capa 2: las diez canciones
   const pulsarLayer = svg.append("g").attr("class", "pulsar").style("opacity", 0);
+  const craftLayer = svg.append("g").attr("class", "craft").style("opacity", 0);
   const originalLayer = svg.append("g").attr("class", "original").style("opacity", 0);
   const albumLayer = svg.append("g").attr("class", "album80").style("opacity", 0);
   const songsLayer = svg.append("g").attr("class", "songs-layer");
@@ -215,8 +216,15 @@
     }
     pulsarLine.attr("d", d3.line()(pts));
   }
+  // La tesis de Craft junto al disco (foto de Jen Christiansen / Scientific American, con permiso)
+  const CRAFT = Math.min(H, W) * 0.96;
+  craftLayer.append("image").attr("href", "assets/sa/craft-tesis-y-disco.jpg").attr("x", CX - CRAFT / 2).attr("y", (H - CRAFT) / 2)
+    .attr("width", CRAFT).attr("height", CRAFT).attr("preserveAspectRatio", "xMidYMid meet");
+  craftLayer.append("text").attr("class", "plabel").attr("x", CX + CRAFT / 2).attr("y", (H + CRAFT) / 2 + 14)
+    .attr("text-anchor", "end").text("Foto / Photo: Jen Christiansen · Scientific American");
   function showView(animate) {
     const v = state.view, dur = animate ? 1000 : 0, ease = d3.easeCubicInOut;
+    craftLayer.interrupt().transition().duration(dur).style("opacity", v === "craft" ? 1 : 0);
     pulsarLayer.interrupt().transition().duration(dur).style("opacity", v === "pulsar" ? 1 : 0);
     pulsarText.text(T().pulsarLabel);
     songsLayer.style("pointer-events", v !== "songs" ? "none" : null).transition().duration(dur).style("opacity", v === "songs" ? 1 : 0);
