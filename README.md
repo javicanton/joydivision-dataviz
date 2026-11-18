@@ -4,8 +4,8 @@
 
 Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el primer disco de Joy Division, en tres tiempos:
 
-1. **Portada.** Titular, subtítulo y la portada original del disco (`assets/cover.jpg`; diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.).
-2. **Scrollytelling.** Empieza con el púlsar CP 1919 (una línea que late con su periodo real, 1,3373 s) y el gráfico de Harold D. Craft Jr. de 1970 y la tesis de Harold D. Craft Jr. (1970), con las imágenes del reportaje de Jen Christiansen en *Scientific American* (`assets/sa/`, usadas con su permiso). y una foto de Jocelyn Bell Burnell (`assets/bell-radiotelescopio.jpg`, vía *Mujeres con Ciencia*). Después aparece la portada, que se amplía y se funde con las diez líneas del disco; el texto recorre la historia del disco mientras el gráfico cambia.
+1. **Portada.** Titular, subtítulo y el gráfico de CP 1919 dibujado con los datos originales (`data/cp1919.json`): 80 pulsos de 300 muestras, la serie de Harold D. Craft Jr. que Peter Saville llevó a la portada.
+2. **Scrollytelling.** Empieza con el púlsar CP 1919 (una línea que late con su periodo real, 1,3373 s) y la tesis de Harold D. Craft Jr. (1970), con las imágenes del reportaje de Jen Christiansen en *Scientific American* (`assets/sa/`, usadas con su permiso) y una foto de Jocelyn Bell Burnell (`assets/bell-radiotelescopio.jpg`, vía *Mujeres con Ciencia*). Después el mismo gráfico de 80 pulsos se amplía y se funde con las diez líneas del disco; el texto recorre la historia del disco mientras el gráfico cambia.
 3. **Reproductor.** Al final, el gráfico funciona como reproductor del disco, con un vúmetro en la línea que suena.
 
 - **Diez líneas, diez canciones.** Cada línea es una canción, en el orden del disco (cara *Outside* arriba, *Inside* abajo). Como en la portada, es plana a los lados y en el centro se levanta la canción: primero su forma de onda y, para compararlas, sonoridad, brillo, graves o pulso. Con los botones de atributo se dibuja junto a cada línea, como una barra, un valor de ReccoBeats (energía, valencia, bailabilidad, instrumentalidad o acústica) para comparar las canciones. La parte central puede tener la misma anchura para todas o la duración real.
@@ -16,6 +16,7 @@ Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el prim
 
 | Archivo | Qué contiene | Cómo se genera |
 |---|---|---|
+| `data/cp1919.json` | 80 pulsos de CP 1919, 300 muestras cada uno: la serie del gráfico de la portada | `scripts/fetch_cp1919.py` |
 | `data/unknown-pleasures.json` | Canciones, forma de onda y perfiles (400 puntos por dato), atributos de ReccoBeats, identificadores de Spotify | `scripts/build_data.py` |
 | `data/vu/NN.bin.gz` | Espectro para el vúmetro: 30 fotogramas por segundo, 128 bandas mel de 30 Hz a 16 kHz, un byte por banda, con gzip (el navegador lo descomprime) | `scripts/analyze_audio.py` |
 | `data/reccobeats-features.csv` | Atributos sonoros (energía, valencia, instrumentalidad...) de la edición 2019 Digital Master | `scripts/build_data.py` |
@@ -26,6 +27,7 @@ Reportaje interactivo sobre *Unknown Pleasures* (Factory Records, 1979), el prim
 Para regenerar todo, desde esta carpeta (necesita Python con `numpy`, `scipy` y `librosa`, y `ffmpeg`):
 
 ```
+python3 scripts/fetch_cp1919.py
 python3 scripts/fetch_reccobeats.py
 python3 scripts/analyze_audio.py "../1979. Unknown Pleasures [1993, POCD-1879]" .
 python3 scripts/build_data.py
@@ -40,6 +42,6 @@ Para verla en local: `python3 -m http.server` en esta carpeta y abrir `http://lo
 
 ## Fuentes
 
-Wikipedia (*Unknown Pleasures*), Alberto Areta (*Danza SR B1919+21*), Jen Christiansen en *Scientific American* (2015), Big Think, Universidad de Cambridge, Claus Wilke (*Goodbye joyplots*, 2017) y ReccoBeats. Enlaces completos al final de la página.
+Wikipedia (*Unknown Pleasures*), la serie de CP 1919 del gist de borgar (la que usa joyPlot), Alberto Areta (*Danza SR B1919+21*), Jen Christiansen en *Scientific American* (2015), Big Think, Universidad de Cambridge, Claus Wilke (*Goodbye joyplots*, 2017) y ReccoBeats. Enlaces completos al final de la página.
 
 Hecho con [D3](https://d3js.org). Por Javi Cantón-Correa · [javiercanton.com](https://javiercanton.com)

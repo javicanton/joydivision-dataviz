@@ -20,7 +20,10 @@
   const CX = W / 2;
   const TOP = AMP + 40;
 
-  const data = await d3.json("data/unknown-pleasures.json");
+  const [data, cp1919] = await Promise.all([
+    d3.json("data/unknown-pleasures.json"),
+    d3.json("data/cp1919.json")
+  ]);
   const tracks = data.tracks;
   const byId = new Map(tracks.map(d => [d.id, d]));
   const maxS = d3.max(tracks, d => d.mp3_seconds);
@@ -164,11 +167,10 @@
     if (viewChanged || !animate) showView(animate);
   }
 
-  // ---------- De la portada al disco ----------
-  // 1) "original": la portada del disco (assets/cover.jpg), entera y centrada.
-  // 2) "songs": la imagen se amplía hasta que su bloque de líneas ocupa la zona de las canciones y se
-  //    funde con las diez líneas del disco.
-  // Posición del bloque de líneas dentro de la imagen de la portada (fracción del lado de la imagen)
+  // ---------- Del gráfico del púlsar al disco ----------
+  // 1) "original": los 80 pulsos de CP 1919, dibujados con la serie original, en el recuadro de la portada.
+  // 2) "songs": el gráfico se amplía hasta que ese bloque ocupa la zona de las canciones y se funde con ellas.
+  // Posición del bloque de líneas dentro del cuadrado, la misma que en la portada (fracción del lado)
   const COVER_BOX = { x0: 0.309, x1: 0.682, y0: 0.249, y1: 0.725 };
   const BW = ZW, BX0 = CX - ZW / 2, BY0 = TOP - AMP;
   const IMG0 = Math.min(H, W);
@@ -176,9 +178,44 @@
   const imgAt = big => big
     ? { x: BX0 - COVER_BOX.x0 * IMG1, y: BY0 - COVER_BOX.y0 * IMG1, s: IMG1 }
     : { x: CX - IMG0 / 2, y: (H - IMG0) / 2, s: IMG0 };
-  const coverImg = originalLayer.append("image").attr("href", "assets/cover.jpg").attr("preserveAspectRatio", "xMidYMid meet");
-  const placeImg = (sel, big) => { const p = imgAt(big); sel.attr("x", p.x).attr("y", p.y).attr("width", p.s).attr("height", p.s); };
-  placeImg(coverImg, false);
+  // El gráfico de CP 1919, con los 80 pulsos de la serie original, en el mismo recuadro que la portada
+  // para que al pasar a las canciones se amplíe y se funda con ellas. Cada pulso es un grupo (data-i):
+  // la animación de la medición (el pulso que llega y se apila) se podrá hacer sobre estos grupos.
+  const CP_BOX = { x0: COVER_BOX.x0 * 1000, x1: COVER_BOX.x1 * 1000, y0: COVER_BOX.y0 * 1000, y1: COVER_BOX.y1 * 1000 };
+  const CP_SCALE = 0.2;
+  function mountCp(parent) {
+    const pulses = cp1919.pulses, nP = pulses.length, nS = pulses[0].length;
+    let mn = Infinity;
+    for (const row of pulses) for (const v of row) if (v < mn) mn = v;
+    let top = 0;
+    for (let i = 0; i < nP; i++) {
+      let m = -Infinity;
+      for (const v of pulses[i]) if (v > m) m = v;
+      top = Math.min(top, i - (m - mn) * CP_SCALE);
+    }
+    const gap = (CP_BOX.y1 - CP_BOX.y0) / ((nP - 1) - top);
+    const g = parent.append("g").attr("class", "cp-lines");
+    for (let i = 0; i < nP; i++) {
+      const row = pulses[i], y = CP_BOX.y0 + (i - top) * gap;
+      let d = "";
+      for (let j = 0; j < nS; j++) {
+        const x = CP_BOX.x0 + (CP_BOX.x1 - CP_BOX.x0) * j / (nS - 1);
+        d += (j ? "L" : "M") + x.toFixed(1) + "," + (y - (row[j] - mn) * CP_SCALE * gap).toFixed(1);
+      }
+      const pulse = g.append("g").attr("class", "pulse").attr("data-i", i);
+      pulse.append("path").attr("class", "pfill").attr("d", `${d}L${CP_BOX.x1},${y.toFixed(1)}L${CP_BOX.x0},${y.toFixed(1)}Z`);
+      pulse.append("path").attr("class", "pline").attr("d", d);
+    }
+    return g;
+  }
+  mountCp(d3.select("#cover-svg"));
+  const coverChart = originalLayer.append("g");
+  mountCp(coverChart);
+  const placeChart = (sel, big) => {
+    const p = imgAt(big);
+    sel.attr("transform", `translate(${p.x},${p.y}) scale(${p.s / 1000})`);
+  };
+  placeChart(coverChart, false);
   // El púlsar: una sola línea que late con el periodo real de CP 1919 (la forma del pulso es esquemática)
   const PERIOD = 1.3373;
   const pulsarY = H / 2 + 40;
@@ -206,7 +243,7 @@
     pulsarText.text(T().pulsarLabel);
     songsLayer.style("pointer-events", v !== "songs" ? "none" : null).transition().duration(dur).style("opacity", v === "songs" ? 1 : 0);
     originalLayer.interrupt().transition().duration(dur).ease(ease).style("opacity", v === "original" ? 1 : 0);
-    coverImg.interrupt().transition().duration(dur).ease(ease).call(placeImg, v !== "original");
+    coverChart.interrupt().transition().duration(dur).ease(ease).call(placeChart, v !== "original");
     d3.select(".fig figcaption").style("visibility", v === "songs" ? null : "hidden");
   }
 
@@ -493,7 +530,6 @@
   // ---------- Portada ----------
   function renderCover() {
     const c = T().cover;
-    d3.select("#cover-img").attr("alt", c.caption);
     d3.select(".pulsar .plabel").text(T().pulsarLabel);
     d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
     d3.select("#c-byline").text(c.byline); d3.select("#cover-caption").text(c.caption); d3.select("#c-scroll").text(c.scroll);
