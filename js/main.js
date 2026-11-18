@@ -58,11 +58,8 @@
   const fillPath = (pts, d) => line(pts) + `L${W},${base(d) + 1}L0,${base(d) + 1}Z`;
 
   // ---------- Dibujo ----------
-  // capas: el púlsar, la tesis de Craft, la portada y las diez canciones
-  // capa 0: la portada original (imagen); capa 1: el disco en 80 líneas; capa 2: las diez canciones
-  const pulsarLayer = svg.append("g").attr("class", "pulsar").style("opacity", 0);
-  const craftLayer = svg.append("g").attr("class", "craft").style("opacity", 0);
-  const originalLayer = svg.append("g").attr("class", "original").style("opacity", 0);
+  // capas: el gráfico de CP 1919 (80 pulsos, o uno solo) y las diez canciones
+  const chartLayer = svg.append("g").attr("class", "cp-layer").style("opacity", 0);
   const songsLayer = svg.append("g").attr("class", "songs-layer");
   const axis = songsLayer.append("g").attr("class", "axis");
   const labels = songsLayer.append("g");
@@ -167,23 +164,18 @@
     if (viewChanged || !animate) showView(animate);
   }
 
-  // ---------- Del gráfico del púlsar al disco ----------
-  // 1) "original": los 80 pulsos de CP 1919, dibujados con la serie original, en el recuadro de la portada.
-  // 2) "songs": el gráfico se amplía hasta que ese bloque ocupa la zona de las canciones y se funde con ellas.
-  // Posición del bloque de líneas dentro del cuadrado, la misma que en la portada (fracción del lado)
-  const COVER_BOX = { x0: 0.309, x1: 0.682, y0: 0.249, y1: 0.725 };
-  const BW = ZW, BX0 = CX - ZW / 2, BY0 = TOP - AMP;
-  const IMG0 = Math.min(H, W);
-  const IMG1 = BW / (COVER_BOX.x1 - COVER_BOX.x0);
-  const imgAt = big => big
-    ? { x: BX0 - COVER_BOX.x0 * IMG1, y: BY0 - COVER_BOX.y0 * IMG1, s: IMG1 }
-    : { x: CX - IMG0 / 2, y: (H - IMG0) / 2, s: IMG0 };
-  // El gráfico de CP 1919, con los 80 pulsos de la serie original, en el mismo recuadro que la portada
-  // para que al pasar a las canciones se amplíe y se funda con ellas. Cada pulso es un grupo (data-i):
-  // la animación de la medición (el pulso que llega y se apila) se podrá hacer sobre estos grupos.
-  const CP_BOX = { x0: COVER_BOX.x0 * 1000, x1: COVER_BOX.x1 * 1000, y0: COVER_BOX.y0 * 1000, y1: COVER_BOX.y1 * 1000 };
+  // ---------- CP 1919: 80 pulsos, un pulso, y el paso a las canciones ----------
+  // El gráfico ocupa casi todo el recuadro. Cada pulso es un grupo: al pasar el puntero se lee
+  // su intensidad, y un seno muy pequeño lo mueve. En el primer paso las demás líneas se van
+  // y queda un pulso real, que late con el periodo de la estrella. Luego vuelven las 80,
+  // y al pasar a las canciones el bloque se acerca a su zona y se funde con ellas.
+  const PERIOD = 1.3373;
   const CP_SCALE = 0.2;
-  function mountCp(parent) {
+  const FOCUS = 27; // un pulso alto de la serie, para que al quedar solo se lea bien
+  const BW = ZW, BX0 = CX - ZW / 2, BY0 = TOP - AMP;
+  let pulseK = 0, pulseTarget = 0, holdPulse = true, cpClock = 0;
+
+  function cpGeom(box) {
     const pulses = cp1919.pulses, nP = pulses.length, nS = pulses[0].length;
     let mn = Infinity;
     for (const row of pulses) for (const v of row) if (v < mn) mn = v;
@@ -193,58 +185,131 @@
       for (const v of pulses[i]) if (v > m) m = v;
       top = Math.min(top, i - (m - mn) * CP_SCALE);
     }
-    const gap = (CP_BOX.y1 - CP_BOX.y0) / ((nP - 1) - top);
-    const g = parent.append("g").attr("class", "cp-lines");
-    for (let i = 0; i < nP; i++) {
-      const row = pulses[i], y = CP_BOX.y0 + (i - top) * gap;
+    const gap = (box.y1 - box.y0) / ((nP - 1) - top);
+    const rows = pulses.map((row, i) => {
+      const baseY = box.y0 + (i - top) * gap;
       let d = "";
+      const ys = new Array(nS);
       for (let j = 0; j < nS; j++) {
-        const x = CP_BOX.x0 + (CP_BOX.x1 - CP_BOX.x0) * j / (nS - 1);
-        d += (j ? "L" : "M") + x.toFixed(1) + "," + (y - (row[j] - mn) * CP_SCALE * gap).toFixed(1);
+        const x = box.x0 + (box.x1 - box.x0) * j / (nS - 1);
+        ys[j] = -((row[j] - mn) * CP_SCALE * gap);
+        d += (j ? "L" : "M") + x.toFixed(1) + "," + ys[j].toFixed(1);
       }
-      const pulse = g.append("g").attr("class", "pulse").attr("data-i", i);
-      pulse.append("path").attr("class", "pfill").attr("d", `${d}L${CP_BOX.x1},${y.toFixed(1)}L${CP_BOX.x0},${y.toFixed(1)}Z`);
-      pulse.append("path").attr("class", "pline").attr("d", d);
-    }
-    return g;
+      return { i, baseY, ys, row, d, fill: `${d}L${box.x1.toFixed(1)},0L${box.x0.toFixed(1)},0Z` };
+    });
+    return { rows, gap, nS, box };
   }
-  mountCp(d3.select("#cover-svg"));
-  const coverChart = originalLayer.append("g");
-  mountCp(coverChart);
-  const placeChart = (sel, big) => {
-    const p = imgAt(big);
-    sel.attr("transform", `translate(${p.x},${p.y}) scale(${p.s / 1000})`);
-  };
-  placeChart(coverChart, false);
-  // El púlsar: una sola línea que late con el periodo real de CP 1919 (la forma del pulso es esquemática)
-  const PERIOD = 1.3373;
-  const pulsarY = H / 2 + 40;
-  const pulsarLine = pulsarLayer.append("path").attr("class", "pline");
-  const pulsarText = pulsarLayer.append("text").attr("class", "plabel").attr("x", CX).attr("y", pulsarY + 34).attr("text-anchor", "middle");
-  function drawPulsar(now) {
-    const ph = ((now / 1000) % PERIOD) / PERIOD, amp = Math.exp(-ph * 9) * (NARROW ? 110 : 170);
-    const pts = [];
-    for (let i = 0; i <= 160; i++) {
-      const x = BX0 + BW * i / 160, u = (i / 160 - 0.5) / 0.035;
-      pts.push([x, pulsarY - amp * Math.exp(-u * u / 2) - (Math.sin(i * 1.7 + now / 90) * 0.6 + 0.6)]);
-    }
-    pulsarLine.attr("d", d3.line()(pts));
+  function mountCp(parent, geom) {
+    const g = parent.append("g").attr("class", "cp-lines");
+    const nodes = geom.rows.map(row => {
+      const pulse = g.append("g").attr("class", "pulse").attr("data-i", row.i);
+      const inner = pulse.append("g").attr("class", "pulse-geom");
+      inner.append("path").attr("class", "pfill").attr("d", row.fill);
+      inner.append("path").attr("class", "pline").attr("d", row.d);
+      return { row, pulse, inner };
+    });
+    const hit = g.append("rect").attr("class", "cp-hit")
+      .attr("x", geom.box.x0).attr("y", geom.box.y0)
+      .attr("width", geom.box.x1 - geom.box.x0).attr("height", geom.box.y1 - geom.box.y0);
+    const dot = g.append("circle").attr("class", "cp-dot").attr("r", 3.2).style("display", "none");
+    const mount = { g, geom, nodes, hit, dot, hot: null };
+    hit.on("pointermove pointerdown", ev => readCp(mount, ev))
+      .on("pointerleave", () => hideCp(mount));
+    return mount;
   }
-  // La tesis de Craft junto al disco (foto de Jen Christiansen / Scientific American, con permiso)
-  const CRAFT = Math.min(H, W) * 0.96;
-  craftLayer.append("image").attr("href", "assets/sa/craft-tesis-y-disco.jpg").attr("x", CX - CRAFT / 2).attr("y", (H - CRAFT) / 2)
-    .attr("width", CRAFT).attr("height", CRAFT).attr("preserveAspectRatio", "xMidYMid meet");
-  craftLayer.append("text").attr("class", "plabel").attr("x", CX + CRAFT / 2).attr("y", (H + CRAFT) / 2 + 14)
-    .attr("text-anchor", "end").text("Foto / Photo: Jen Christiansen · Scientific American");
+  function layoutCp(mount, now, k, center) {
+    const beat = 0.62 + 0.38 * Math.exp(-((now / 1000) % PERIOD) / PERIOD * 7);
+    mount.nodes.forEach(({ row, pulse, inner }) => {
+      const focus = row.i === FOCUS;
+      const drift = (1 - k) * mount.drift * Math.sin(now / 1100 + row.i * 0.47);
+      const y = row.baseY + drift + (center == null ? 0 : k * (focus ? center - row.baseY : 0));
+      const dx = drift * 0.35;
+      // las otras líneas se aplanan; al final se ocultan y queda un pulso que late
+      const sy = Math.max(0.001, focus ? (1 - k) + k * beat * 2.2 : (1 - k));
+      inner.attr("transform", `translate(${dx.toFixed(2)},${y.toFixed(2)}) scale(1,${sy.toFixed(3)})`);
+      pulse.style("display", !focus && k > 0.92 ? "none" : null);
+      row._y = y;
+      row._sy = sy;
+      row._dx = dx;
+    });
+  }
+  function hideCp(mount) {
+    mount.dot.style("display", "none");
+    mount.g.classed("is-hover", false);
+    if (mount.hot != null) mount.nodes[mount.hot].pulse.classed("is-on", false);
+    mount.hot = null;
+    tip.attr("hidden", "");
+  }
+  function readCp(mount, ev) {
+    const k = mount === vizMount ? pulseK : 0;
+    const [mx, my] = d3.pointer(ev, mount.g.node());
+    const { box, nS, rows, gap } = mount.geom;
+    if (mx < box.x0 || mx > box.x1 || my < box.y0 - gap || my > box.y1 + gap) { hideCp(mount); return; }
+    let best = null, bestD = Infinity;
+    if (k > 0.4) best = rows[FOCUS];
+    else for (const row of rows) {
+      const dist = Math.abs(my - row._y);
+      if (dist < bestD) { bestD = dist; best = row; }
+    }
+    if (!best || (k <= 0.4 && bestD > gap * 1.35)) { hideCp(mount); return; }
+    const j = Math.max(0, Math.min(nS - 1, Math.round((mx - box.x0) / (box.x1 - box.x0) * (nS - 1))));
+    const x = box.x0 + (box.x1 - box.x0) * j / (nS - 1) + (best._dx || 0);
+    const y = best._y + best.ys[j] * best._sy;
+    mount.dot.attr("cx", x).attr("cy", y).style("display", null);
+    mount.g.classed("is-hover", true);
+    if (mount.hot !== best.i) {
+      if (mount.hot != null) mount.nodes[mount.hot].pulse.classed("is-on", false);
+      mount.nodes[best.i].pulse.classed("is-on", true);
+      mount.hot = best.i;
+    }
+    const t = T();
+    showTip(`${t.cpPulse} ${best.i + 1}<span> · ${t.cpValue}</span> ${fmt(best.row[j])}`, ev);
+  }
+  const headerMount = mountCp(d3.select("#cover-svg"), cpGeom({ x0: 36, x1: 964, y0: 22, y1: 978 }));
+  headerMount.drift = headerMount.geom.gap * 0.2;
+  const vizBox = { x0: NARROW ? 10 : 18, x1: W - (NARROW ? 10 : 18), y0: 14, y1: H - 28 };
+  const chartMove = chartLayer.append("g").attr("class", "cp-move");
+  const vizMount = mountCp(chartMove, cpGeom(vizBox));
+  vizMount.drift = vizMount.geom.gap * 0.18;
+  const chartLabel = chartLayer.append("text").attr("class", "plabel").attr("x", CX).attr("y", H - 8).attr("text-anchor", "middle");
+  layoutCp(headerMount, 0, 0, null);
+  layoutCp(vizMount, 0, 0, null);
+  const songZoom = (() => {
+    const b = vizBox, s = BW / (b.x1 - b.x0);
+    const songMid = (BY0 + (H - 36)) / 2, chartMid = (b.y0 + b.y1) / 2;
+    return `translate(${(BX0 - b.x0 * s).toFixed(1)},${(songMid - chartMid * s).toFixed(1)}) scale(${s.toFixed(4)})`;
+  })();
+  const REST = "translate(0,0) scale(1)";
+  function syncPulseLabel() {
+    chartLabel.text(pulseTarget > 0 ? T().pulsarLabel : T().cpHint);
+  }
+  function revealPulse() {
+    if (pulseTarget === 1) return;
+    holdPulse = false;
+    pulseK = 0;
+    pulseTarget = 1;
+    syncPulseLabel();
+  }
   function showView(animate) {
-    const v = state.view, dur = animate ? 1000 : 0, ease = d3.easeCubicInOut;
-    craftLayer.interrupt().transition().duration(dur).style("opacity", v === "craft" ? 1 : 0);
-    pulsarLayer.interrupt().transition().duration(dur).style("opacity", v === "pulsar" ? 1 : 0);
-    pulsarText.text(T().pulsarLabel);
+    const v = state.view, dur = animate ? 1100 : 0, ease = d3.easeCubicInOut;
+    const stack = v === "chart" || v === "pulsar";
+    if (v === "pulsar" && !holdPulse) { pulseK = animate ? 0 : 1; pulseTarget = 1; }
+    else if (v !== "pulsar") pulseTarget = 0;
+    if (!animate && !holdPulse) pulseK = pulseTarget;
+    chartLayer.style("pointer-events", stack ? "auto" : "none")
+      .interrupt().transition().duration(dur).style("opacity", stack ? 1 : 0);
+    chartMove.interrupt().transition().duration(dur).ease(ease).attr("transform", v === "songs" ? songZoom : REST);
+    syncPulseLabel();
     songsLayer.style("pointer-events", v !== "songs" ? "none" : null).transition().duration(dur).style("opacity", v === "songs" ? 1 : 0);
-    originalLayer.interrupt().transition().duration(dur).ease(ease).style("opacity", v === "original" ? 1 : 0);
-    coverChart.interrupt().transition().duration(dur).ease(ease).call(placeChart, v !== "original");
     d3.select(".fig figcaption").style("visibility", v === "songs" ? null : "hidden");
+  }
+  function tickCp(now) {
+    const dt = cpClock ? Math.min(48, now - cpClock) : 16;
+    cpClock = now;
+    pulseK += (pulseTarget - pulseK) * (1 - Math.exp(-dt / 340));
+    if (Math.abs(pulseK - pulseTarget) < 0.001) pulseK = pulseTarget;
+    layoutCp(headerMount, now, 0, null);
+    layoutCp(vizMount, now, pulseK, H / 2);
   }
 
   // ---------- Lectura con el puntero ----------
@@ -487,8 +552,9 @@
     d3.select("#p-time").text(`${mmss(frac * d.mp3_seconds)} / ${mmss(d.mp3_seconds)}`);
   }
   (function tick(now) {
-    if (vu && !document.hidden) drawVu(now || performance.now());
-    if (state.view === "pulsar" && !document.hidden) drawPulsar(now || performance.now());
+    const t = now || performance.now();
+    if (vu && !document.hidden) drawVu(t);
+    if (!document.hidden) tickCp(t);
     requestAnimationFrame(tick);
   })();
 
@@ -514,7 +580,11 @@
   }
   function observeSteps() {
     const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) applyStep(e.target.dataset.step); });
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        if (e.target.dataset.step === "pulsar") revealPulse();
+        applyStep(e.target.dataset.step);
+      });
     }, { rootMargin: NARROW ? "-60% 0px -30% 0px" : "-45% 0px -45% 0px" });
     document.querySelectorAll(".step").forEach(el => io.observe(el));
   }
@@ -530,7 +600,7 @@
   // ---------- Portada ----------
   function renderCover() {
     const c = T().cover;
-    d3.select(".pulsar .plabel").text(T().pulsarLabel);
+    syncPulseLabel();
     d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
     d3.select("#c-byline").text(c.byline); d3.select("#cover-caption").text(c.caption); d3.select("#c-scroll").text(c.scroll);
   }

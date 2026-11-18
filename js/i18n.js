@@ -4,8 +4,8 @@
    feature (atributo de ReccoBeats que se muestra junto a cada línea). */
 window.STEPS = [
   { id: "pulsar",     metric: "wave",       mode: "equal", focus: [], view: "pulsar" },
-  { id: "craft",      metric: "wave",       mode: "equal", focus: [], view: "craft" },
-  { id: "original",   metric: "wave",       mode: "equal", focus: [], view: "original" },
+  { id: "craft",      metric: "wave",       mode: "equal", focus: [], view: "chart" },
+  { id: "original",   metric: "wave",       mode: "equal", focus: [], view: "chart" },
   { id: "read",       metric: "wave",       mode: "equal", focus: [] },
   { id: "compare",    metric: "loudness",   mode: "equal", focus: [] },
   { id: "salford",    metric: "wave",       mode: "equal", focus: [] },
@@ -55,15 +55,17 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, dibujado con su propio sonido",
       dek: "La portada del primer disco de Joy Division es un gráfico de datos: 80 pulsos de una estrella lejana. Medimos el audio de sus diez canciones y lo contamos con el mismo lenguaje, para leerlo, compararlo y escucharlo.",
       byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
-      caption: "80 pulsos de CP 1919 dibujados con los datos de Harold D. Craft Jr. (Arecibo, 1970): el gráfico de la portada de Unknown Pleasures (Peter Saville, Factory Records, 1979).",
+      caption: "80 pulsos de CP 1919, con los datos de Harold D. Craft Jr. (Arecibo, 1970). Pasa el puntero o el dedo por una línea para ver su intensidad. Es el gráfico de la portada de Unknown Pleasures (Peter Saville, Factory, 1979).",
       scroll: "Desliza para empezar"
     },
     featureLabel: "Atributo", pulsarLabel: "CP 1919 · un pulso cada 1,3373 s",
+    cpHint: "Pasa por una línea",
+    cpPulse: "Pulso", cpValue: "intensidad",
     sourcesTitle: "Fuentes",
     methodTitle: "Cómo se hizo",
     steps: {
       pulsar: `<h2>Una estrella que late</h2>
-        <p>Jocelyn Bell Burnell construyó un radiotelescopio para su tesis doctoral en Cambridge y, en 1967, detectó en sus registros una señal que se repetía cada 1,3373 segundos. La apodó <i>Little Green Man</i>. El 28 de noviembre de 1967 se identificó como el primer púlsar: CP 1919 (hoy PSR B1919+21), una estrella de neutrones que gira y barre el espacio con su haz como un faro. La línea de la izquierda late a ese ritmo (la forma del pulso es esquemática).</p>
+        <p>Jocelyn Bell Burnell construyó un radiotelescopio para su tesis doctoral en Cambridge y, en 1967, detectó en sus registros una señal que se repetía cada 1,3373 segundos. La apodó <i>Little Green Man</i>. El 28 de noviembre de 1967 se identificó como el primer púlsar: CP 1919 (hoy PSR B1919+21), una estrella de neutrones que gira y barre el espacio con su haz como un faro. El gráfico se queda en una sola línea, y así se lee: cada trazo es un pulso. Este es uno de la serie de Arecibo, y late cada 1,3373 segundos.</p>
         <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" width="780" height="780" alt="Jocelyn Bell Burnell sonriendo, con una antena de radiotelescopio al fondo" loading="lazy"><figcaption>Jocelyn Bell Burnell. Imagen: <a href="https://mujeresconciencia.com/2014/12/03/el-universo-de-jocelyn-bell-burnell/" target="_blank" rel="noopener">Mujeres con Ciencia</a>.</figcaption></figure>
         <p>El Nobel de Física de 1974 premió a su director de tesis, Antony Hewish, y a Martin Ryle. Bell Burnell quedó fuera.</p>`,
       craft: `<h2>80 pulsos en una tesis</h2>
@@ -123,7 +125,7 @@ window.I18N = {
         <p class="note" id="source-note"></p>
         <p class="note">Teclado: espacio para pausar, ← → para cambiar de canción.</p>`
     },
-    method: `<p><b>Púlsar.</b> Las 80 líneas de CP 1919 salen de la serie del gráfico de Harold D. Craft Jr. (tesis, 1970): 80 pulsos de 300 muestras, la misma que publicaron la <i>Cambridge Encyclopaedia of Astronomy</i> (1977) y la portada. La primera línea es la de arriba. Cada curva se dibuja sobre la anterior y el relleno bajo ella la tapa, como en el trazador Calcomp. La escala vertical es la de una recreación habitual de ese gráfico (un quinto del salto entre líneas).</p>
+    method: `<p><b>Púlsar.</b> Las 80 líneas de CP 1919 salen de la serie del gráfico de Harold D. Craft Jr. (tesis, 1970): 80 pulsos de 300 muestras, la misma que publicaron la <i>Cambridge Encyclopaedia of Astronomy</i> (1977) y la portada. La primera línea es la de arriba. Cada curva se dibuja sobre la anterior y el relleno bajo ella la tapa, como en el trazador Calcomp. La escala vertical es la de una recreación habitual de ese gráfico (un quinto del salto entre líneas). Al pasar el puntero se lee la intensidad de ese punto. En el primer paso las demás líneas se retiran y queda un pulso, que late con el periodo real.</p>
       <p><b>Audio.</b> La forma de onda, los perfiles y los vúmetros se calcularon con Python (librosa) sobre los MP3 de la edición en CD de 1993. Cada línea tiene 400 puntos; todos los datos usan la misma escala en las diez canciones, así que se pueden comparar entre sí. El vúmetro es el espectro precalculado (128 bandas en escala mel entre 30 Hz y 16 kHz, 30 fotogramas por segundo), sincronizado con la posición de la reproducción, con una marca de pico que retiene los máximos.</p>
       <p><b>Atributos.</b> Spotify cerró el acceso a sus atributos sonoros para los desarrolladores en noviembre de 2024. Los de esta página (energía, valencia, instrumentalidad...) son de ReccoBeats, que usa los mismos nombres y la misma escala con su propio análisis, para la edición 2019 Digital Master.</p>
       <p><b>Reproducción.</b> Spotify (canciones completas con la sesión iniciada) o, en local, los MP3 del disco.</p>`,
@@ -172,15 +174,17 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, drawn with its own sound",
       dek: "The cover of Joy Division's debut album is a data chart: 80 pulses from a distant star. We measured the audio of its ten songs and tell their story in the same language, to read, compare and listen.",
       byline: "Javi Cantón-Correa · 17 November 2026",
-      caption: "80 pulses of CP 1919 drawn from Harold D. Craft Jr.'s data (Arecibo, 1970): the chart on the cover of Unknown Pleasures (Peter Saville, Factory Records, 1979).",
+      caption: "80 pulses of CP 1919, from Harold D. Craft Jr.'s data (Arecibo, 1970). Move a pointer or a finger along a line to read its intensity. It is the chart on the cover of Unknown Pleasures (Peter Saville, Factory, 1979).",
       scroll: "Scroll to begin"
     },
     featureLabel: "Attribute", pulsarLabel: "CP 1919 · one pulse every 1.3373 s",
+    cpHint: "Move over a line",
+    cpPulse: "Pulse", cpValue: "intensity",
     sourcesTitle: "Sources",
     methodTitle: "How it was made",
     steps: {
       pulsar: `<h2>A star that beats</h2>
-        <p>Jocelyn Bell Burnell built a radio telescope for her PhD at Cambridge and, in 1967, spotted in its records a signal that repeated every 1.3373 seconds. She nicknamed it <i>Little Green Man</i>. On 28 November 1967 it was identified as the first pulsar: CP 1919 (today PSR B1919+21), a spinning neutron star that sweeps space with its beam like a lighthouse. The line on the left beats at that rhythm (the pulse shape is schematic).</p>
+        <p>Jocelyn Bell Burnell built a radio telescope for her PhD at Cambridge and, in 1967, spotted in its records a signal that repeated every 1.3373 seconds. She nicknamed it <i>Little Green Man</i>. On 28 November 1967 it was identified as the first pulsar: CP 1919 (today PSR B1919+21), a spinning neutron star that sweeps space with its beam like a lighthouse. The chart keeps a single line, which is how the drawing reads: each trace is one pulse. This one is from the Arecibo series, and it beats every 1.3373 seconds.</p>
         <figure class="src-fig"><img src="assets/bell-radiotelescopio.jpg" width="780" height="780" alt="Jocelyn Bell Burnell smiling, with a radio telescope dish behind her" loading="lazy"><figcaption>Jocelyn Bell Burnell. Image: <a href="https://mujeresconciencia.com/2014/12/03/el-universo-de-jocelyn-bell-burnell/" target="_blank" rel="noopener">Mujeres con Ciencia</a>.</figcaption></figure>
         <p>The 1974 Nobel Prize in Physics went to her thesis supervisor, Antony Hewish, and to Martin Ryle. Bell Burnell was left out.</p>`,
       craft: `<h2>80 pulses in a thesis</h2>
@@ -240,7 +244,7 @@ window.I18N = {
         <p class="note" id="source-note"></p>
         <p class="note">Keyboard: space to pause, ← → to change song.</p>`
     },
-    method: `<p><b>Pulsar.</b> The 80 lines of CP 1919 come from the series in Harold D. Craft Jr.'s chart (thesis, 1970): 80 pulses of 300 samples, the same one printed in the <i>Cambridge Encyclopaedia of Astronomy</i> (1977) and on the cover. The first line is the top one. Each curve is drawn over the previous one and the fill under it covers it, as on the Calcomp plotter. The vertical scale is the one used in a usual recreation of that chart (one fifth of the gap between lines).</p>
+    method: `<p><b>Pulsar.</b> The 80 lines of CP 1919 come from the series in Harold D. Craft Jr.'s chart (thesis, 1970): 80 pulses of 300 samples, the same one printed in the <i>Cambridge Encyclopaedia of Astronomy</i> (1977) and on the cover. The first line is the top one. Each curve is drawn over the previous one and the fill under it covers it, as on the Calcomp plotter. The vertical scale is the one used in a usual recreation of that chart (one fifth of the gap between lines). Moving over a line reads the intensity at that point. On the first step the other lines leave and one pulse remains, beating at the real period.</p>
       <p><b>Audio.</b> The waveform, profiles and VU meters were computed in Python (librosa) from the MP3s of the 1993 CD edition. Each line has 400 points; every value uses the same scale across the ten songs, so they can be compared. The VU meter is the precomputed spectrum (128 mel bands from 30 Hz to 16 kHz, 30 frames per second), synced to the playback position, with a peak-hold trace.</p>
       <p><b>Attributes.</b> Spotify closed developer access to its audio features in November 2024. The ones on this page (energy, valence, instrumentalness...) come from ReccoBeats, which uses the same names and scale with its own analysis, for the 2019 Digital Master edition.</p>
       <p><b>Playback.</b> Spotify (full songs when logged in) or, locally, the album's MP3s.</p>`,
