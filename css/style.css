@@ -24,7 +24,9 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 
 /* ---------- Portada ---------- */
 .cover { min-height: 100vh; max-width: 980px; margin: 0 auto; padding: 7vh 24px 6vh; display: flex; flex-direction: column; align-items: center; }
-#cover-img { display: block; width: min(100%, 52vh, 520px); height: auto; aspect-ratio: 1; }
+#cover-svg { display: block; width: min(100%, 52vh, 520px); height: auto; aspect-ratio: 1; }
+.cp-lines .pfill { fill: var(--bg); }
+.cp-lines .pline { fill: none; stroke: var(--fg); stroke-width: 2.15; stroke-linejoin: round; }
 .cover-text { max-width: 640px; text-align: center; margin-top: 4vh; }
 .cover .kicker { font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); margin: 0 0 16px; }
 .cover h1 { font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.1; letter-spacing: .02em; margin: 0 0 18px; }

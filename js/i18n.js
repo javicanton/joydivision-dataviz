@@ -55,7 +55,7 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, dibujado con su propio sonido",
       dek: "La portada del primer disco de Joy Division es un gráfico de datos: 80 pulsos de una estrella lejana. Medimos el audio de sus diez canciones y lo contamos con el mismo lenguaje, para leerlo, compararlo y escucharlo.",
       byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
-      caption: "Portada de Unknown Pleasures (Factory Records, 1979). Diseño de Peter Saville a partir de un gráfico de Harold D. Craft Jr.",
+      caption: "80 pulsos de CP 1919 dibujados con los datos de Harold D. Craft Jr. (Arecibo, 1970): el gráfico de la portada de Unknown Pleasures (Peter Saville, Factory Records, 1979).",
       scroll: "Desliza para empezar"
     },
     featureLabel: "Atributo", pulsarLabel: "CP 1919 · un pulso cada 1,3373 s",
@@ -74,7 +74,7 @@ window.I18N = {
         <p class="note">Más sobre esta historia en el <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">reportaje de Jen Christiansen</a> y en <a href="https://www.albertoareta.com/proyectos/sr-b1919-21" target="_blank" rel="noopener">Danza SR B1919+21, de Alberto Areta</a>.</p>`,
       original: `<h2>De la tesis a la portada</h2>
         <p>Nueve años después, Bernard Sumner encontró una reproducción de ese gráfico en la <i>Cambridge Encyclopaedia of Astronomy</i> y se la pasó a Peter Saville. Es la portada de <i>Unknown Pleasures</i>: los 80 pulsos de CP 1919 apilados uno sobre otro, en blanco sobre negro. Un gráfico científico convertido en una de las imágenes más reconocibles de la música popular.</p>
-        <figure class="src-fig"><img src="assets/sa/cambridge-encyclopaedia.jpg" width="600" height="399" alt="El gráfico de CP 1919 en la Cambridge Encyclopaedia of Astronomy" loading="lazy" onerror="this.parentNode.remove()"><figcaption><i>The Cambridge Encyclopaedia of Astronomy</i> (1977). Imagen cedida por Jen Christiansen / <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener"><i>Scientific American</i></a>.</figcaption></figure>
+        <p>El gráfico de la izquierda está dibujado con esa serie: 80 pulsos y 300 muestras por pulso. El relleno bajo cada línea tapa las que quedan detrás, como hacía el trazador.</p>
         <p>¿Qué pasa si usamos el mismo lenguaje para dibujar el sonido del disco? Cada línea será una canción.</p>`,
       read: `<h2>Cómo leer las líneas</h2>
         <p>Cada línea es una canción, en el orden del disco: arriba la cara <i>Outside</i> (1 a 5) y abajo la cara <i>Inside</i> (6 a 10). Como en la portada, cada línea es plana a los lados y en el centro se levanta la canción, de principio a fin: su <b>forma de onda</b>, el pico de amplitud de cada instante.</p>
@@ -123,12 +123,14 @@ window.I18N = {
         <p class="note" id="source-note"></p>
         <p class="note">Teclado: espacio para pausar, ← → para cambiar de canción.</p>`
     },
-    method: `<p><b>Audio.</b> La forma de onda, los perfiles y los vúmetros se calcularon con Python (librosa) sobre los MP3 de la edición en CD de 1993. Cada línea tiene 400 puntos; todos los datos usan la misma escala en las diez canciones, así que se pueden comparar entre sí. El vúmetro es el espectro precalculado (128 bandas en escala mel entre 30 Hz y 16 kHz, 30 fotogramas por segundo), sincronizado con la posición de la reproducción, con una marca de pico que retiene los máximos.</p>
+    method: `<p><b>Púlsar.</b> Las 80 líneas de CP 1919 salen de la serie del gráfico de Harold D. Craft Jr. (tesis, 1970): 80 pulsos de 300 muestras, la misma que publicaron la <i>Cambridge Encyclopaedia of Astronomy</i> (1977) y la portada. La primera línea es la de arriba. Cada curva se dibuja sobre la anterior y el relleno bajo ella la tapa, como en el trazador Calcomp. La escala vertical es la de una recreación habitual de ese gráfico (un quinto del salto entre líneas).</p>
+      <p><b>Audio.</b> La forma de onda, los perfiles y los vúmetros se calcularon con Python (librosa) sobre los MP3 de la edición en CD de 1993. Cada línea tiene 400 puntos; todos los datos usan la misma escala en las diez canciones, así que se pueden comparar entre sí. El vúmetro es el espectro precalculado (128 bandas en escala mel entre 30 Hz y 16 kHz, 30 fotogramas por segundo), sincronizado con la posición de la reproducción, con una marca de pico que retiene los máximos.</p>
       <p><b>Atributos.</b> Spotify cerró el acceso a sus atributos sonoros para los desarrolladores en noviembre de 2024. Los de esta página (energía, valencia, instrumentalidad...) son de ReccoBeats, que usa los mismos nombres y la misma escala con su propio análisis, para la edición 2019 Digital Master.</p>
       <p><b>Reproducción.</b> Spotify (canciones completas con la sesión iniciada) o, en local, los MP3 del disco.</p>`,
     sources: [
       ["Unknown Pleasures, Wikipedia (inglés)", "https://en.wikipedia.org/wiki/Unknown_Pleasures"],
       ["Jen Christiansen: Pop Culture Pulsar, Scientific American (2015)", "https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/"],
+      ["Serie de CP 1919 (80×300), gist de borgar, la de joyPlot", "https://gist.github.com/borgar/31c1e476b8e92a11d7e9"],
       ["Known pleasures: from pulsar signal to post-punk icon, Big Think", "https://bigthink.com/strange-maps/known-pleasures-from-pulsar-signal-to-post-punk-icon/"],
       ["Jocelyn Bell Burnell y CP 1919, Universidad de Cambridge", "https://cam.ac.uk/node/220051"],
       ["Alberto Areta: Danza SR B1919+21", "https://www.albertoareta.com/proyectos/sr-b1919-21"],
@@ -170,7 +172,7 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, drawn with its own sound",
       dek: "The cover of Joy Division's debut album is a data chart: 80 pulses from a distant star. We measured the audio of its ten songs and tell their story in the same language, to read, compare and listen.",
       byline: "Javi Cantón-Correa · 17 November 2026",
-      caption: "Cover of Unknown Pleasures (Factory Records, 1979). Designed by Peter Saville from a chart by Harold D. Craft Jr.",
+      caption: "80 pulses of CP 1919 drawn from Harold D. Craft Jr.'s data (Arecibo, 1970): the chart on the cover of Unknown Pleasures (Peter Saville, Factory Records, 1979).",
       scroll: "Scroll to begin"
     },
     featureLabel: "Attribute", pulsarLabel: "CP 1919 · one pulse every 1.3373 s",
@@ -189,7 +191,7 @@ window.I18N = {
         <p class="note">More on this story in <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener">Jen Christiansen's story</a> and in <a href="https://www.albertoareta.com/proyectos/sr-b1919-21" target="_blank" rel="noopener">Danza SR B1919+21, by Alberto Areta</a>.</p>`,
       original: `<h2>From thesis to cover</h2>
         <p>Nine years later, Bernard Sumner found a reproduction of that chart in the <i>Cambridge Encyclopaedia of Astronomy</i> and passed it to Peter Saville. It is the cover of <i>Unknown Pleasures</i>: the 80 pulses of CP 1919 stacked one above the other, white on black. A scientific chart turned into one of the most recognisable images in popular music.</p>
-        <figure class="src-fig"><img src="assets/sa/cambridge-encyclopaedia.jpg" width="600" height="399" alt="The CP 1919 chart in the Cambridge Encyclopaedia of Astronomy" loading="lazy" onerror="this.parentNode.remove()"><figcaption><i>The Cambridge Encyclopaedia of Astronomy</i> (1977). Image courtesy of Jen Christiansen / <a href="https://www.scientificamerican.com/blog/sa-visual/pop-culture-pulsar-origin-story-of-joy-division-s-unknown-pleasures-album-cover-video/" target="_blank" rel="noopener"><i>Scientific American</i></a>.</figcaption></figure>
+        <p>The chart on the left is drawn from that series: 80 pulses, 300 samples each. The fill under each line covers the ones behind it, as the plotter did.</p>
         <p>What happens if we use the same language to draw the album's sound? Each line will be a song.</p>`,
       read: `<h2>How to read the lines</h2>
         <p>Each line is a song, in album order: the <i>Outside</i> side on top (1 to 5) and the <i>Inside</i> side below (6 to 10). As on the cover, each line is flat at the sides and the song rises in the middle, from start to end: its <b>waveform</b>, the amplitude peak at each moment.</p>
@@ -238,7 +240,8 @@ window.I18N = {
         <p class="note" id="source-note"></p>
         <p class="note">Keyboard: space to pause, ← → to change song.</p>`
     },
-    method: `<p><b>Audio.</b> The waveform, profiles and VU meters were computed in Python (librosa) from the MP3s of the 1993 CD edition. Each line has 400 points; every value uses the same scale across the ten songs, so they can be compared. The VU meter is the precomputed spectrum (128 mel bands from 30 Hz to 16 kHz, 30 frames per second), synced to the playback position, with a peak-hold trace.</p>
+    method: `<p><b>Pulsar.</b> The 80 lines of CP 1919 come from the series in Harold D. Craft Jr.'s chart (thesis, 1970): 80 pulses of 300 samples, the same one printed in the <i>Cambridge Encyclopaedia of Astronomy</i> (1977) and on the cover. The first line is the top one. Each curve is drawn over the previous one and the fill under it covers it, as on the Calcomp plotter. The vertical scale is the one used in a usual recreation of that chart (one fifth of the gap between lines).</p>
+      <p><b>Audio.</b> The waveform, profiles and VU meters were computed in Python (librosa) from the MP3s of the 1993 CD edition. Each line has 400 points; every value uses the same scale across the ten songs, so they can be compared. The VU meter is the precomputed spectrum (128 mel bands from 30 Hz to 16 kHz, 30 frames per second), synced to the playback position, with a peak-hold trace.</p>
       <p><b>Attributes.</b> Spotify closed developer access to its audio features in November 2024. The ones on this page (energy, valence, instrumentalness...) come from ReccoBeats, which uses the same names and scale with its own analysis, for the 2019 Digital Master edition.</p>
       <p><b>Playback.</b> Spotify (full songs when logged in) or, locally, the album's MP3s.</p>`,
     sources: null,   // se usan las de español
