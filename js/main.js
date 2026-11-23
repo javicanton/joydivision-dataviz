@@ -493,9 +493,17 @@
     "new-dawn-fades": 178.97, "shes-lost-control": 74.73, shadowplay: 108.50,
     wilderness: 57.30, interzone: 33.77, "i-remember-nothing": 128.53
   };
-  // El embed solo salta a un segundo entero.
+  // El master de 2019 que suena en Spotify no tiene el mismo instante cero que el CD de 1993
+  // del que sale el vúmetro. Segundos que hay que sumar al reloj del master para caer en el CD.
+  // Medidos alineando el fragmento de 90 s de Apple, que en este disco empieza siempre a los 42,93 s:
+  // la diferencia de duración no vale, porque en varias canciones ese tiempo está al final.
+  const MASTER_AT = {
+    disorder: -0.53, candidate: 0.53, insight: 0.60, "i-remember-nothing": -0.07
+  };
+  // El embed solo salta a un segundo entero. El clic marca un punto del CD; en el master cae en otro.
   function seekSecond(d, frac) {
-    const sec = Math.round(frac * d.mp3_seconds);
+    const off = player.full ? (MASTER_AT[d.id] || 0) : 0;
+    const sec = Math.round(frac * d.mp3_seconds - off);
     const cap = Math.floor((player.dur || d.spotify_ms) / 1000);
     return Math.max(0, Math.min(sec, cap));
   }
@@ -517,11 +525,15 @@
     const extra = player.playing && player.live && !player.buffering ? Math.min(1200, performance.now() - player.stamp) : 0;
     return (base + extra) / 1000;
   }
-  // Segundos del CD de 1993 que corresponden a lo que se oye. Misma cifra que el reloj del audio:
-  // no se estira para que quepa en la otra duración, porque eso va separando el dibujo del sonido.
+  // Segundos del CD de 1993 que corresponden a lo que se oye. No se estira el tiempo para igualar
+  // las dos duraciones: el desfase es fijo y, si se reparte, el dibujo se separa del sonido.
   function heardSeconds(d) {
     if (!d) return 0;
-    const at = player.source !== "local" && player.preview ? (PREVIEW_AT[d.id] || 0) : 0;
+    let at = 0;
+    if (player.source !== "local") {
+      if (player.preview) at = PREVIEW_AT[d.id] || 0;
+      else if (player.full) at = MASTER_AT[d.id] || 0;
+    }
     return Math.max(0, Math.min(d.mp3_seconds, fileSeconds() + at));
   }
   function updatePlayerUI() {
