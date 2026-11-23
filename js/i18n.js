@@ -52,7 +52,7 @@ window.I18N = {
     reccobeats: "ReccoBeats",
     cover: {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
-      title: "<i>Unknown Pleasures</i>: oír visualizaciones",
+      title: "<i>Unknown Pleasures</i>: una visualización de datos icónica",
       dek: "La portada del legendario primer disco de Joy Division es un gráfico científico real, publicado algunos años antes, pero pocos conocen la verdadera historia.",
       disclaimer: `Este reportaje se lee mejor en desktop. En el móvil puedes ir directamente al <a href="#reproductor">reproductor</a>.`,
       byline: "Javi Cantón-Correa · 23 de noviembre de 2026",
@@ -176,7 +176,7 @@ window.I18N = {
     reccobeats: "ReccoBeats",
     cover: {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
-      title: "<i>Unknown Pleasures</i>: hear visualizations",
+      title: "<i>Unknown Pleasures</i>: an iconic data visualization",
       dek: "The cover of Joy Division's legendary debut album is a real scientific chart, published some years earlier, but few know the true story.",
       disclaimer: `This story reads better on desktop. On a phone you can go straight to the <a href="#reproductor">player</a>.`,
       byline: "Javi Cantón-Correa · 23 November 2026",
