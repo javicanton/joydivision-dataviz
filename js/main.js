@@ -137,7 +137,8 @@
       `<button type="button" data-m="${m}" aria-pressed="${state.metric === m}" title="${t.metrics[m][1]}">${t.metrics[m][0]}</button>`).join(""));
     d3.select("#mode").html(["equal", "real"].map(m =>
       `<button type="button" data-mode="${m}" aria-pressed="${state.mode === m}">${t.modes[m]}</button>`).join(""));
-    d3.select("#feature").attr("aria-label", t.featureNone).html(`<span class="lbl">${t.featureLabel}</span>` +
+    d3.select("#feature-label").text(t.featureLabel);
+    d3.select("#feature").attr("aria-label", t.featureNone).html(
       FEATURES.map(f => `<button type="button" data-f="${f}" aria-pressed="${state.feature === f}">${t.features[f]}</button>`).join(""));
     d3.selectAll("#feature button").on("click", function () {
       setChart({ feature: state.feature === this.dataset.f ? null : this.dataset.f });
@@ -174,6 +175,8 @@
   const FOCUS = 27; // un pulso alto de la serie, para que al quedar solo se lea bien
   const BW = ZW, BX0 = CX - ZW / 2, BY0 = TOP - AMP;
   let pulseK = 0, pulseTarget = 0, holdPulse = true, cpClock = 0;
+  let moveShown = 0, centerShown = 0, leftHome = null, leftViz = null, endOn = false;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function cpGeom(box) {
     const pulses = cp1919.pulses, nP = pulses.length, nS = pulses[0].length;
@@ -284,16 +287,15 @@
     chartLabel.text(pulseTarget > 0 ? T().pulsarLabel : T().cpHint);
   }
   function revealPulse() {
-    if (pulseTarget === 1) return;
     holdPulse = false;
-    pulseK = 0;
     pulseTarget = 1;
+    if (moveShown >= 0.999) pulseK = 1;
     syncPulseLabel();
   }
   function showView(animate) {
     const v = state.view, dur = animate ? 1100 : 0, ease = d3.easeCubicInOut;
     const stack = v === "chart" || v === "pulsar";
-    if (v === "pulsar" && !holdPulse) { pulseK = animate ? 0 : 1; pulseTarget = 1; }
+    if (v === "pulsar" && !holdPulse) { pulseTarget = 1; if (moveShown >= 0.999 || !animate) pulseK = 1; }
     else if (v !== "pulsar") pulseTarget = 0;
     if (!animate && !holdPulse) pulseK = pulseTarget;
     chartLayer.style("pointer-events", stack ? "auto" : "none")
@@ -306,9 +308,16 @@
   function tickCp(now) {
     const dt = cpClock ? Math.min(48, now - cpClock) : 16;
     cpClock = now;
-    pulseK += (pulseTarget - pulseK) * (1 - Math.exp(-dt / 340));
-    if (Math.abs(pulseK - pulseTarget) < 0.001) pulseK = pulseTarget;
-    layoutCp(headerMount, now, 0, null);
+    const coverK = document.getElementById("cover-svg").classList.contains("is-travel")
+      ? Math.min(1, moveShown / 0.45) : 0;
+    if (coverK > 0 && moveShown < 0.999) {
+      pulseTarget = 1;
+      pulseK = coverK;
+    } else {
+      pulseK += (pulseTarget - pulseK) * (1 - Math.exp(-dt / 340));
+      if (Math.abs(pulseK - pulseTarget) < 0.001) pulseK = pulseTarget;
+    }
+    layoutCp(headerMount, now, coverK, 500);
     layoutCp(vizMount, now, pulseK, H / 2);
   }
 
@@ -553,6 +562,7 @@
   }
   (function tick(now) {
     const t = now || performance.now();
+    updateTravels();
     if (vu && !document.hidden) drawVu(t);
     if (!document.hidden) tickCp(t);
     requestAnimationFrame(tick);
@@ -573,13 +583,177 @@
     syncStage();
   }
   // Al llegar al último paso el gráfico pasa al centro y se usa como reproductor.
-  // Cuando el método y las fuentes entran en pantalla, se retira para no taparlos.
-  let endOn = false;
+  // El desplazamiento lo marca el scroll: corto, y se aparta cuando entran el método y las fuentes.
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function easeOut(t) { return 1 - (1 - t) * (1 - t); }
+  function mixBox(a, b, t) {
+    return {
+      left: a.left + (b.left - a.left) * t,
+      top: a.top + (b.top - a.top) * t,
+      width: a.width + (b.width - a.width) * t,
+      height: a.height + (b.height - a.height) * t
+    };
+  }
+  function smoothToward(cur, goal) {
+    if (reduceMotion || Math.abs(goal - cur) < 0.004) return goal;
+    return cur + (goal - cur) * 0.62;
+  }
+  // El gráfico de la portada se desplaza a la columna izquierda y se queda en un pulso.
+  function coverHome() {
+    const slot = document.getElementById("cover-slot");
+    const live = slot.getBoundingClientRect();
+    const moveStart = slot.offsetTop - 8;
+    return {
+      left: live.left,
+      top: slot.offsetTop - moveStart,
+      width: live.width,
+      height: live.height
+    };
+  }
+  function travelTargets() {
+    const slot = document.getElementById("cover-slot");
+    if (!slot) return { move: 0 };
+    const moveStart = slot.offsetTop - 8;
+    const moveSpan = innerHeight * 0.42;
+    return { move: clamp01((scrollY - moveStart) / moveSpan) };
+  }
+  // Después de Joyplot: el gráfico de las canciones se desplaza al centro.
+  function centerTarget() {
+    const card = document.querySelector('[data-step="ridgeline"] .card');
+    if (!card) return 0;
+    const span = innerHeight * 0.34;
+    const passed = 12 - card.getBoundingClientRect().bottom;
+    return clamp01(passed / span);
+  }
+  function rememberLeft() {
+    const scrolly = document.querySelector(".scrolly");
+    if (scrolly.classList.contains("is-gliding") || scrolly.classList.contains("stage") || scrolly.classList.contains("yield")) return;
+    const viz = document.getElementById("viz");
+    const cap = document.querySelector("#fig figcaption");
+    if (!viz || !cap) return;
+    const vr = viz.getBoundingClientRect();
+    const cr = cap.getBoundingClientRect();
+    const fig = document.getElementById("fig");
+    const fr = fig.getBoundingClientRect();
+    const stuckTop = vr.top - fr.top;
+    if (vr.width < 20 || stuckTop < -200) return;
+    leftViz = { left: vr.left, top: stuckTop, width: vr.width, height: vr.height };
+    leftHome = { left: vr.left, top: stuckTop, width: vr.width, height: Math.max(vr.height + 8, cr.bottom - vr.top) };
+  }
+  let stageMeasure = null;
+  function stageRoom() {
+    if (stageMeasure && stageMeasure.w === innerWidth && stageMeasure.h === innerHeight && stageMeasure.player === !document.getElementById("player").hidden) return stageMeasure;
+    const card = document.querySelector('[data-step="listen"] .card');
+    const cap = document.querySelector("#fig figcaption");
+    let cardH = NARROW ? 160 : 210;
+    if (card) {
+      card.classList.add("is-measure");
+      cardH = card.offsetHeight;
+      card.classList.remove("is-measure");
+    }
+    let capH = 112;
+    if (cap) {
+      const prev = cap.style.width;
+      cap.style.width = "640px";
+      capH = Math.ceil(cap.offsetHeight + 8);
+      cap.style.width = prev;
+    }
+    const player = document.getElementById("player");
+    const playerOn = player && !player.hidden;
+    const playerH = playerOn ? Math.ceil(player.getBoundingClientRect().height + 28) : 16;
+    stageMeasure = { w: innerWidth, h: innerHeight, player: playerOn, topPad: (NARROW ? 48 : 52) + cardH + 8, capH, playerH };
+    return stageMeasure;
+  }
+  function centerBox() {
+    const room = stageRoom();
+    const maxH = Math.max(160, innerHeight - room.topPad - room.playerH - room.capH);
+    const aspect = W / H;
+    let h = maxH, w = h * aspect;
+    const maxW = Math.min(innerWidth - (NARROW ? 20 : 64), 980);
+    if (w > maxW) { w = maxW; h = w / aspect; }
+    const left = (innerWidth - w) / 2;
+    const gap = innerHeight - room.topPad - room.playerH - room.capH - h;
+    const top = room.topPad + Math.max(0, gap / 2);
+    return { left, top, width: w, height: h + room.capH };
+  }
+  function placeBox(el, box) {
+    el.style.left = box.left + "px";
+    el.style.top = box.top + "px";
+    el.style.width = box.width + "px";
+    el.style.height = box.height + "px";
+  }
+  function clearBox(el) {
+    el.style.left = el.style.top = el.style.width = el.style.height = "";
+  }
+  function applyEnter() {
+    const svg = document.getElementById("cover-svg");
+    const slot = document.getElementById("cover-slot");
+    const viz = document.getElementById("viz");
+    if (!svg || !slot || !viz) return;
+    const cover = document.getElementById("cover");
+    if (NARROW) {
+      if (cover) cover.classList.remove("is-aside");
+      svg.classList.remove("is-travel");
+      clearBox(svg);
+      viz.style.opacity = "";
+      return;
+    }
+    const moving = moveShown > 0.001;
+    const arrived = moveShown >= 0.999;
+    const live = viz.getBoundingClientRect();
+    const dest = leftViz;
+    const caught = !!dest && live.top <= dest.top + 8 && live.top > -80;
+    if (cover) cover.classList.toggle("is-aside", moving && !caught && centerShown < 0.02);
+    if (!moving || centerShown > 0.02 || (arrived && caught)) {
+      svg.classList.remove("is-travel");
+      clearBox(svg);
+      viz.style.opacity = "";
+      if (moveShown > 0.9 && centerShown < 0.02 && state.view === "pulsar") {
+        holdPulse = false;
+        pulseTarget = 1;
+        pulseK = 1;
+      }
+      return;
+    }
+    const goal = dest || coverHome();
+    const home = coverHome();
+    const mp = easeOut(moveShown);
+    svg.classList.add("is-travel");
+    placeBox(svg, mixBox(home, goal, mp));
+    viz.style.opacity = "0";
+    if (mp > 0.7 && state.view === "pulsar") {
+      holdPulse = false;
+      pulseTarget = 1;
+      pulseK = Math.max(pulseK, mp);
+    }
+  }
+  function applyCenter(q) {
+    const fig = document.getElementById("fig");
+    const scrolly = document.querySelector(".scrolly");
+    if (!fig || !leftHome) return;
+    const gliding = q > 0.02 && q < 0.98 && !endOn;
+    if (!gliding) { clearBox(fig); return; }
+    scrolly.classList.add("is-gliding");
+    const dest = centerBox();
+    placeBox(fig, mixBox(leftHome, dest, easeOut(q)));
+  }
+  function updateTravels() {
+    const travel = travelTargets();
+    moveShown = smoothToward(moveShown, travel.move);
+    centerShown = smoothToward(centerShown, endOn ? 1 : centerTarget());
+    rememberLeft();
+    applyEnter();
+    applyCenter(centerShown);
+    syncStage();
+  }
   function syncStage() {
     const scrolly = document.querySelector(".scrolly");
-    const on = state.step === "listen" && !endOn;
+    const q = centerShown;
+    const on = q >= 0.98 && !endOn;
+    const gliding = q > 0.02 && q < 0.98 && !endOn;
     scrolly.classList.toggle("stage", on);
-    scrolly.classList.toggle("yield", state.step === "listen" && endOn);
+    scrolly.classList.toggle("is-gliding", gliding);
+    scrolly.classList.toggle("yield", endOn && q > 0.5);
     if (!on) { scrolly.classList.remove("stage-tight"); return; }
     const card = scrolly.querySelector('.step[data-step="listen"] .card');
     const cap = scrolly.querySelector("figcaption");

@@ -17,7 +17,9 @@
 </div>
 
 <header class="cover" id="cover">
-  <svg id="cover-svg" role="img" aria-labelledby="cover-caption" viewBox="0 0 1000 1000"></svg>
+  <div class="cover-slot" id="cover-slot">
+    <svg id="cover-svg" role="img" aria-labelledby="cover-caption" viewBox="0 0 1000 1000"></svg>
+  </div>
   <div class="cover-text">
     <p class="kicker" id="c-kicker"></p>
     <h1 id="c-title"></h1>
@@ -29,6 +31,7 @@
 </header>
 
 <main class="scrolly">
+  <div class="fig-spacer" id="fig-spacer" aria-hidden="true"></div>
   <figure class="fig" id="fig">
     <svg id="viz" role="img" aria-labelledby="viz-title"><title id="viz-title"></title></svg>
     <figcaption>
@@ -37,6 +40,7 @@
         <div class="seg" role="group" id="mode"></div>
       </div>
       <div class="controls">
+        <span class="feature-label" id="feature-label"></span>
         <div class="seg seg-f" role="group" id="feature"></div>
       </div>
       <p class="caption" id="caption" aria-live="polite"></p>

@@ -24,7 +24,9 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 
 /* ---------- Portada ---------- */
 .cover { min-height: 100vh; max-width: 980px; margin: 0 auto; padding: 7vh 24px 6vh; display: flex; flex-direction: column; align-items: center; }
-#cover-svg { display: block; width: min(100%, 64vh, 680px); height: auto; aspect-ratio: 1; touch-action: pan-y; }
+.cover-slot { width: min(100%, 64vh, 680px); aspect-ratio: 1; }
+#cover-svg { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+#cover-svg.is-travel { position: fixed; z-index: 8; margin: 0; max-width: none; aspect-ratio: auto; }
 .cp-lines .pfill { fill: var(--bg); }
 .cp-lines .pline { fill: none; stroke: var(--fg); stroke-width: 1.15; stroke-linejoin: round; }
 #cover-svg .cp-lines .pline { stroke-width: 1.65; }
@@ -35,7 +37,18 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 .cp-lines.is-hover .pulse.is-on .pline { opacity: 1; stroke-width: 1.8; }
 #cover-svg .cp-lines.is-hover .pulse.is-on .pline { stroke-width: 2.5; }
 .cp-layer .plabel { fill: var(--dim); font-family: var(--font); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-.cover-text { max-width: 640px; text-align: center; margin-top: 4vh; }
+.cover-text { max-width: 640px; text-align: center; margin-top: 4vh; transition: max-width .32s ease, margin .32s ease; }
+.cover.is-aside { max-width: 1320px; }
+.cover.is-aside .cover-slot { align-self: center; }
+@media (min-width: 821px) {
+  .cover.is-aside .cover-text {
+    width: min(440px, 42vw);
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: 2vw;
+    text-align: left;
+  }
+}
 .cover .kicker { font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); margin: 0 0 16px; }
 .cover h1 { font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.1; letter-spacing: .02em; margin: 0 0 18px; }
 .cover .dek { font-family: var(--serif); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.55; color: #d4d4d4; margin: 0 0 18px; }
@@ -51,13 +64,15 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 
 /* ---------- Scrollytelling: gráfico fijo a la izquierda, texto a la derecha ---------- */
 .scrolly { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 4vw; max-width: 1320px; margin: 0 auto; padding: 0 3vw; }
+.fig-spacer { display: none; }
+.scrolly.is-gliding .fig-spacer { display: block; height: 100vh; }
 .fig { position: sticky; top: 0; height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; }
 #viz { display: block; width: 100%; height: auto; max-height: calc(100vh - 140px); overflow: visible; }
 figcaption { margin-top: 10px; }
-.controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; }
 .seg { display: flex; border: 1px solid var(--faint); }
 .seg-f { flex-wrap: wrap; justify-content: center; }
-.seg-f .lbl { color: var(--dim); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; padding: 6px 8px; border-right: 1px solid var(--faint); }
+.feature-label { color: var(--dim); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
 .controls + .controls { margin-top: 8px; }
 .ridge .fbar { stroke: var(--fg); stroke-width: 3; }
 .caption { min-height: 2.8em; margin: 12px auto 0; max-width: 560px; text-align: center; font-size: 12px; line-height: 1.5; letter-spacing: .04em; color: var(--dim); }
@@ -168,9 +183,20 @@ body:has(#player:not([hidden])) .end { padding-bottom: 240px; }
   justify-content: center;
   align-items: center;
   pointer-events: none;
-  animation: stage-in .35s ease;
 }
-@keyframes stage-in { from { opacity: 0; } to { opacity: 1; } }
+.scrolly.is-gliding .fig {
+  position: fixed;
+  z-index: 6;
+  margin: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+.scrolly.is-gliding #viz,
+.scrolly.is-gliding figcaption { pointer-events: auto; }
 .scrolly.stage #viz,
 .scrolly.stage figcaption { pointer-events: auto; touch-action: pan-y; }
 .scrolly.stage #viz {
@@ -180,9 +206,21 @@ body:has(#player:not([hidden])) .end { padding-bottom: 240px; }
   max-height: calc(100vh - var(--stage-top, 200px) - var(--stage-pad, 16px) - var(--stage-bot, 140px));
 }
 .scrolly.stage figcaption { width: min(100%, 980px); }
+.scrolly.is-gliding .step { visibility: hidden; }
+.card.is-measure {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: min(680px, calc(100vw - 36px));
+  max-width: none;
+  visibility: hidden;
+  pointer-events: none;
+}
+.card.is-measure h2 { margin-bottom: 8px; }
+.card.is-measure p { font-size: 15.5px; line-height: 1.45; margin-bottom: 8px; }
 .scrolly.stage .steps { position: static; z-index: auto; }
 .scrolly.stage .step { visibility: hidden; }
-.scrolly.stage .step[data-step="listen"] { opacity: 1; transition: none; }
+.scrolly.stage .step[data-step="listen"] { visibility: visible; opacity: 1; transition: none; }
 .scrolly.stage .step[data-step="listen"] .card {
   visibility: visible;
   position: fixed;
