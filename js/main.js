@@ -379,7 +379,7 @@
   // con sesión iniciada suena la canción completa; sin ella, un fragmento.
   const audio = document.getElementById("audio");
   const player = {
-    source: null, id: null, playing: false, frac: 0, dur: 0, stamp: 0, ctrl: null, creating: false, ended: false, preview: false, error: false,
+    source: null, id: null, playing: false, frac: 0, dur: 0, stamp: 0, ctrl: null, creating: false, ended: false, preview: false, error: false, buffering: false, live: false,
     async detect() {
       const forced = params.get("source");
       if (forced === "spotify") return (this.source = "spotify");
@@ -395,7 +395,7 @@
         if (frac == null) return this.toggle();
         return this.seek(frac);
       }
-      this.id = d.id; this.frac = frac || 0; this.dur = 0; this.ended = false; this.playing = false;
+      this.id = d.id; this.frac = frac || 0; this.dur = 0; this.ended = false; this.playing = false; this.live = false; this.buffering = false; this.pending = 0;
       loadVu(d);
       startVu(d);
       if (this.source === "local") this.localLoad(d, frac);
@@ -423,7 +423,7 @@
     seek(frac) {
       const d = byId.get(this.id);
       if (this.source === "local") { if (audio.duration) audio.currentTime = frac * audio.duration; if (audio.paused) audio.play(); }
-      else if (this.ctrl && d) { this.ctrl.seek(Math.floor(spotifySeekSec(d, frac))); if (!this.playing) this.ctrl.resume(); }
+      else if (this.ctrl && d && !this.preview) { this.ctrl.seek(seekSecond(d, frac)); if (!this.playing) this.ctrl.resume(); }
     },
     step(k) {
       const i = this.id ? byId.get(this.id).n - 1 : -1;
@@ -431,16 +431,15 @@
       if (j !== i) this.play(tracks[j].id);
     },
     next() { const d = byId.get(this.id); if (d && d.n < tracks.length) this.play(tracks[d.n].id); else { this.playing = false; updatePlayerUI(); } },
-    // posición actual como fracción de la canción (0-1)
+    // posición actual como fracción de la canción medida (0-1)
     position() {
-      if (this.source === "local") return audio.duration ? audio.currentTime / audio.duration : this.frac;
-      if (!this.dur) return this.frac;
-      const ms = this.frac * this.dur + (this.playing ? performance.now() - this.stamp : 0);
-      // con un fragmento de 30 segundos se toma como el principio de la canción completa
-      return Math.min(1, ms / (this.preview ? byId.get(this.id).spotify_ms : this.dur));
+      const d = byId.get(this.id);
+      return d && d.mp3_seconds ? Math.max(0, Math.min(1, heardSeconds(d) / d.mp3_seconds)) : this.frac;
     },
     spotifyLoad(d, frac) {
-      const startAt = frac && !this.preview ? Math.floor(spotifySeekSec(d, frac)) : 0;
+      // sin saber aún si suena el disco entero, un salto al minuto 2 cae fuera del fragmento de 30 s
+      const startAt = frac && this.full ? seekSecond(d, frac) : 0;
+      this.pending = startAt ? 0 : (frac || 0);
       d3.select("#p-embed").attr("hidden", null);
       if (this.ctrl) { this.ctrl.loadUri("spotify:track:" + d.spotify_id, false, startAt); this.ctrl.play(); return; }
       if (this.creating) return;
@@ -455,9 +454,16 @@
     onSpotify(s) {
       const cur = byId.get(this.id);
       if (!cur || (s.playingURI && s.playingURI !== "spotify:track:" + cur.spotify_id)) return;
-      this.dur = s.duration || 0; this.playing = !s.isPaused; this.stamp = performance.now();
+      this.dur = s.duration || 0; this.playing = !s.isPaused; this.buffering = !!s.isBuffering; this.stamp = performance.now();
       this.preview = this.dur > 0 && this.dur <= 35000;
       this.frac = this.dur ? (s.position || 0) / this.dur : 0;
+      // hasta que la posición se mueve, el aviso puede decir «sonando» con el cursor aún en cero
+      this.live = (s.position || 0) > 40;
+      if (!this.preview && this.dur > 35000) this.full = true;
+      if (this.pending) {
+        const want = this.pending; this.pending = 0;
+        if (this.full && want > 0.005) this.ctrl.seek(seekSecond(cur, want));
+      }
       const ended = this.dur > 0 && s.position >= this.dur - 400;
       if (ended && !this.ended) { this.ended = true; this.playing = false; this.next(); return; }
       updatePlayerUI();
@@ -480,20 +486,43 @@
   audio.addEventListener("pause", () => { player.playing = false; updatePlayerUI(); });
   audio.addEventListener("ended", () => player.next());
 
-  // La master de 2019 que sirve Spotify dura un poco más que el CD de 1993 con el que se midió el vúmetro.
-  // Ese margen va al principio: si no se resta, el dibujo se adelanta a lo que se oye.
-  function spotifyLead(d) {
-    return Math.max(0, d.spotify_ms / 1000 - d.mp3_seconds);
+  // El fragmento de 30 s que Spotify pone sin sesión no es el principio: es un trozo del medio.
+  // Segundos del CD de 1993 donde empieza ese fragmento, medidos alineando su espectro con el vúmetro.
+  const PREVIEW_AT = {
+    disorder: 129.63, "day-of-the-lords": 180.70, candidate: 98.87, insight: 172.97,
+    "new-dawn-fades": 178.97, "shes-lost-control": 74.73, shadowplay: 108.50,
+    wilderness: 57.30, interzone: 33.77, "i-remember-nothing": 128.53
+  };
+  // El embed solo salta a un segundo entero.
+  function seekSecond(d, frac) {
+    const sec = Math.round(frac * d.mp3_seconds);
+    const cap = Math.floor((player.dur || d.spotify_ms) / 1000);
+    return Math.max(0, Math.min(sec, cap));
   }
-  function spotifySeekSec(d, frac) {
-    return frac * d.mp3_seconds + spotifyLead(d);
+  // Lo que tarda el altavoz en sonar respecto al reloj del elemento de audio local.
+  function outputLag() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return 0;
+    if (!outputLag.ctx) { try { outputLag.ctx = new AC(); } catch (e) { return 0; } }
+    const lag = (outputLag.ctx.outputLatency || 0) + (outputLag.ctx.baseLatency || 0);
+    return lag > 0 && lag < 0.4 ? lag : 0;
   }
+  // Segundos dentro del archivo que está sonando (el disco entero, o el fragmento de 30 s).
+  // El aviso de Spotify llega cada segundo; entre medias se extrapola, pero no más allá de esa espera,
+  // y no antes de que el cursor se mueva: si no, el dibujo se adelanta y luego da un salto.
+  function fileSeconds() {
+    if (player.source === "local") return Math.max(0, (audio.currentTime || 0) - outputLag());
+    if (!player.dur) return (player.frac || 0) * ((byId.get(player.id) || {}).mp3_seconds || 0);
+    const base = player.frac * player.dur;
+    const extra = player.playing && player.live && !player.buffering ? Math.min(1200, performance.now() - player.stamp) : 0;
+    return (base + extra) / 1000;
+  }
+  // Segundos del CD de 1993 que corresponden a lo que se oye. Misma cifra que el reloj del audio:
+  // no se estira para que quepa en la otra duración, porque eso va separando el dibujo del sonido.
   function heardSeconds(d) {
     if (!d) return 0;
-    if (player.source === "local") return audio.currentTime || 0;
-    if (!player.dur) return (player.frac || 0) * d.mp3_seconds;
-    const ms = player.frac * player.dur + (player.playing ? performance.now() - player.stamp : 0);
-    return Math.max(0, Math.min(d.mp3_seconds, ms / 1000 - spotifyLead(d)));
+    const at = player.source !== "local" && player.preview ? (PREVIEW_AT[d.id] || 0) : 0;
+    return Math.max(0, Math.min(d.mp3_seconds, fileSeconds() + at));
   }
   function updatePlayerUI() {
     const t = T(), cur = player.id ? byId.get(player.id) : null;
