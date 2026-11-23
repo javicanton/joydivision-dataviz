@@ -725,7 +725,6 @@
     const dest = leftViz;
     const caught = !!dest && live.top <= dest.top + 8 && live.top > -80;
     if (cover) cover.classList.toggle("is-aside", moving && !caught && centerShown < 0.02);
-    const handoff = arrived && caught && centerShown < 0.02 && state.view === "pulsar";
     if (!moving || centerShown > 0.02) {
       releaseCover(svg, viz);
       handoffAt = 0;
@@ -736,19 +735,26 @@
       }
       return;
     }
-    if (handoff && handoffAt === -1) return;
-    if (handoff) {
-      if (!handoffAt) handoffAt = performance.now();
-      const u = reduceMotion ? 1 : clamp01((performance.now() - handoffAt) / 420);
-      holdPulse = false;
-      pulseTarget = 1;
-      pulseK = 1;
-      if (u >= 1) { releaseCover(svg, viz); handoffAt = -1; return; }
-      svg.classList.add("is-travel");
-      placeBox(svg, dest);
-      fitCoverPulse(dest, 1);
-      svg.style.opacity = String(1 - u);
-      viz.style.opacity = String(u);
+    // Una vez que la columna alcanza el pulso, el gráfico del reportaje se queda.
+    // El fundido solo ocurre en ese relevo; los pasos siguientes no pueden volver a taparlo.
+    if (arrived && caught) {
+      const fading = state.view === "pulsar" && handoffAt !== -1;
+      if (fading) {
+        if (!handoffAt) handoffAt = performance.now();
+        const u = reduceMotion ? 1 : clamp01((performance.now() - handoffAt) / 420);
+        holdPulse = false;
+        pulseTarget = 1;
+        pulseK = 1;
+        if (u >= 1) { releaseCover(svg, viz); handoffAt = -1; return; }
+        svg.classList.add("is-travel");
+        placeBox(svg, dest);
+        fitCoverPulse(dest, 1);
+        svg.style.opacity = String(1 - u);
+        viz.style.opacity = String(u);
+        return;
+      }
+      releaseCover(svg, viz);
+      if (state.view === "pulsar") { holdPulse = false; pulseTarget = 1; pulseK = 1; }
       return;
     }
     handoffAt = 0;
