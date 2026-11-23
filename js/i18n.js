@@ -55,8 +55,7 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, dibujado con su propio sonido",
       dek: "La portada del primer disco de Joy Division es, en realidad, un gráfico de datos: 80 pulsos de una estrella lejana. Hemos medido el sonido de sus diez canciones para contarlas con ese mismo lenguaje. Para leer, comparar y, sobre todo, escuchar.",
       byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
-      caption: "80 pulsos de CP 1919, a partir de una versión digitalizada del gráfico de Harold D. Craft Jr. (Arecibo, 1970), el que acabó en la portada de Unknown Pleasures (Peter Saville, Factory, 1979). Pasa el puntero o el dedo por una línea para ver su intensidad.",
-      scroll: "Desliza para empezar"
+      caption: "80 pulsos de CP 1919, a partir de una versión digitalizada del gráfico de Harold D. Craft Jr. (Arecibo, 1970), el que acabó en la portada de Unknown Pleasures (Peter Saville, Factory, 1979). Pasa el puntero o el dedo por una línea para ver su intensidad."
     },
     featureLabel: "Atributo", pulsarLabel: "CP 1919 · un pulso cada 1,3373 s",
     cpHint: "Pasa por una línea",
@@ -177,8 +176,7 @@ window.I18N = {
       title: "<i>Unknown Pleasures</i>, drawn with its own sound",
       dek: "The cover of Joy Division's debut album is, in fact, a data chart: 80 pulses from a distant star. We measured the sound of its ten songs to tell their story in that same language. To read, to compare and, above all, to listen.",
       byline: "Javi Cantón-Correa · 17 November 2026",
-      caption: "80 pulses of CP 1919, from a digitised version of Harold D. Craft Jr.'s chart (Arecibo, 1970), the one that ended up on the cover of Unknown Pleasures (Peter Saville, Factory, 1979). Move a pointer or a finger along a line to read its intensity.",
-      scroll: "Scroll to begin"
+      caption: "80 pulses of CP 1919, from a digitised version of Harold D. Craft Jr.'s chart (Arecibo, 1970), the one that ended up on the cover of Unknown Pleasures (Peter Saville, Factory, 1979). Move a pointer or a finger along a line to read its intensity."
     },
     featureLabel: "Attribute", pulsarLabel: "CP 1919 · one pulse every 1.3373 s",
     cpHint: "Move over a line",
