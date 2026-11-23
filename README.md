@@ -1,4 +1,4 @@
-# Unknown Pleasures · reportaje con datos
+# Unknown Pleasures · visualización y reportaje musical con datos en scrollytelling
 
 **Ver la página: <a href="https://javicanton.github.io/joydivision-dataviz/" target="_blank" rel="noopener noreferrer">https://javicanton.github.io/joydivision-dataviz/</a>**
 
