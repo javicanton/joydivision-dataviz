@@ -175,7 +175,7 @@
   const FOCUS = 27; // un pulso alto de la serie, para que al quedar solo se lea bien
   const BW = ZW, BX0 = CX - ZW / 2, BY0 = TOP - AMP;
   let pulseK = 0, pulseTarget = 0, holdPulse = true, cpClock = 0;
-  let moveShown = 0, centerShown = 0, leftHome = null, leftViz = null, endOn = false;
+  let moveShown = 0, centerShown = 0, leftHome = null, leftViz = null, endOn = false, handoffAt = 0;
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function cpGeom(box) {
@@ -685,6 +685,28 @@
   function clearBox(el) {
     el.style.left = el.style.top = el.style.width = el.style.height = "";
   }
+  // El pulso de la portada vive en un cuadrado; el de la columna, en el recuadro del gráfico.
+  // Al llegar, la línea se estira hasta coincidir con la que se queda junto al texto.
+  function fitCoverPulse(box, t) {
+    if (t <= 0) { headerMount.g.attr("transform", null); return; }
+    const hb = headerMount.geom.box, vb = vizMount.geom.box;
+    const meet = Math.min(box.width, box.height);
+    if (meet < 20) { headerMount.g.attr("transform", null); return; }
+    const coverSpan = (hb.x1 - hb.x0) / 1000;
+    const vizSpan = (vb.x1 - vb.x0) / W;
+    const fullSx = (vizSpan * box.width) / (coverSpan * meet);
+    const fullSy = ((vb.y1 - vb.y0) / H) / ((hb.y1 - hb.y0) / 1000);
+    const sx = 1 + (fullSx - 1) * t;
+    const sy = 1 + (fullSy - 1) * t;
+    headerMount.g.attr("transform", `translate(500,500) scale(${sx.toFixed(4)},${sy.toFixed(4)}) translate(-500,-500)`);
+  }
+  function releaseCover(svg, viz) {
+    svg.classList.remove("is-travel");
+    clearBox(svg);
+    svg.style.opacity = "";
+    viz.style.opacity = "";
+    headerMount.g.attr("transform", null);
+  }
   function applyEnter() {
     const svg = document.getElementById("cover-svg");
     const slot = document.getElementById("cover-slot");
@@ -693,9 +715,8 @@
     const cover = document.getElementById("cover");
     if (NARROW) {
       if (cover) cover.classList.remove("is-aside");
-      svg.classList.remove("is-travel");
-      clearBox(svg);
-      viz.style.opacity = "";
+      releaseCover(svg, viz);
+      handoffAt = 0;
       return;
     }
     const moving = moveShown > 0.001;
@@ -704,10 +725,10 @@
     const dest = leftViz;
     const caught = !!dest && live.top <= dest.top + 8 && live.top > -80;
     if (cover) cover.classList.toggle("is-aside", moving && !caught && centerShown < 0.02);
-    if (!moving || centerShown > 0.02 || (arrived && caught)) {
-      svg.classList.remove("is-travel");
-      clearBox(svg);
-      viz.style.opacity = "";
+    const handoff = arrived && caught && centerShown < 0.02 && state.view === "pulsar";
+    if (!moving || centerShown > 0.02) {
+      releaseCover(svg, viz);
+      handoffAt = 0;
       if (moveShown > 0.9 && centerShown < 0.02 && state.view === "pulsar") {
         holdPulse = false;
         pulseTarget = 1;
@@ -715,12 +736,31 @@
       }
       return;
     }
+    if (handoff && handoffAt === -1) return;
+    if (handoff) {
+      if (!handoffAt) handoffAt = performance.now();
+      const u = reduceMotion ? 1 : clamp01((performance.now() - handoffAt) / 420);
+      holdPulse = false;
+      pulseTarget = 1;
+      pulseK = 1;
+      if (u >= 1) { releaseCover(svg, viz); handoffAt = -1; return; }
+      svg.classList.add("is-travel");
+      placeBox(svg, dest);
+      fitCoverPulse(dest, 1);
+      svg.style.opacity = String(1 - u);
+      viz.style.opacity = String(u);
+      return;
+    }
+    handoffAt = 0;
     const goal = dest || coverHome();
     const home = coverHome();
     const mp = easeOut(moveShown);
+    const box = mixBox(home, goal, mp);
     svg.classList.add("is-travel");
-    placeBox(svg, mixBox(home, goal, mp));
+    placeBox(svg, box);
+    fitCoverPulse(box, clamp01((moveShown - 0.55) / 0.45));
     viz.style.opacity = "0";
+    svg.style.opacity = "";
     if (mp > 0.7 && state.view === "pulsar") {
       holdPulse = false;
       pulseTarget = 1;
