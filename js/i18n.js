@@ -52,8 +52,8 @@ window.I18N = {
     reccobeats: "ReccoBeats",
     cover: {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
-      title: "<i>Unknown Pleasures</i>, dibujado con su propio sonido",
-      dek: "La portada del primer disco de Joy Division es, en realidad, un gráfico de datos: 80 pulsos de una estrella lejana. Hemos medido el sonido de sus diez canciones para contarlas con ese mismo lenguaje. Para leer, comparar y, sobre todo, escuchar.",
+      title: "<i>Unknown Pleasures</i>, una visualización que también se oye",
+      dek: "Muchos amantes de la visualización de datos saben que la portada del primer disco de Joy Division es un gráfico con datos, pero pocos conocen la intrahistoria. Aquí cuento y construyo una visualización para oír y ver este disco.",
       byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
       caption: "80 pulsos de CP 1919, a partir de una versión digitalizada del gráfico de Harold D. Craft Jr. (Arecibo, 1970), el que acabó en la portada de Unknown Pleasures (Peter Saville, Factory, 1979). Pasa el puntero o el dedo por una línea para ver su intensidad."
     },
@@ -173,8 +173,8 @@ window.I18N = {
     reccobeats: "ReccoBeats",
     cover: {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
-      title: "<i>Unknown Pleasures</i>, drawn with its own sound",
-      dek: "The cover of Joy Division's debut album is, in fact, a data chart: 80 pulses from a distant star. We measured the sound of its ten songs to tell their story in that same language. To read, to compare and, above all, to listen.",
+      title: "<i>Unknown Pleasures</i>, a visualisation that can also be heard",
+      dek: "Many people who love data visualisation know that the cover of Joy Division's first album is a chart made of data, but few know the story behind it. Here I tell that story and build a visualisation to hear and see this album.",
       byline: "Javi Cantón-Correa · 17 November 2026",
       caption: "80 pulses of CP 1919, from a digitised version of Harold D. Craft Jr.'s chart (Arecibo, 1970), the one that ended up on the cover of Unknown Pleasures (Peter Saville, Factory, 1979). Move a pointer or a finger along a line to read its intensity."
     },
