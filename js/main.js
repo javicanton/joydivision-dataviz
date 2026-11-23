@@ -298,6 +298,9 @@
     if (v === "pulsar" && !holdPulse) { pulseTarget = 1; if (moveShown >= 0.999 || !animate) pulseK = 1; }
     else if (v !== "pulsar") pulseTarget = 0;
     if (!animate && !holdPulse) pulseK = pulseTarget;
+    svg.classed("is-songs", v === "songs");
+    ridges.select(".hit").attr("tabindex", v === "songs" ? 0 : -1);
+    d3.select("#viz-title").text(v === "songs" ? T().vizTitle : T().pulsarLabel);
     chartLayer.style("pointer-events", stack ? "auto" : "none")
       .interrupt().transition().duration(dur).style("opacity", stack ? 1 : 0);
     chartMove.interrupt().transition().duration(dur).ease(ease).attr("transform", v === "songs" ? songZoom : REST);
@@ -418,8 +421,9 @@
       else if (this.ctrl) { if (this.ended) { this.ended = false; this.ctrl.restart(); } else this.ctrl.togglePlay(); }
     },
     seek(frac) {
+      const d = byId.get(this.id);
       if (this.source === "local") { if (audio.duration) audio.currentTime = frac * audio.duration; if (audio.paused) audio.play(); }
-      else if (this.ctrl) { this.ctrl.seek(Math.floor(frac * (this.dur || byId.get(this.id).spotify_ms) / 1000)); if (!this.playing) this.ctrl.resume(); }
+      else if (this.ctrl && d) { this.ctrl.seek(Math.floor(spotifySeekSec(d, frac))); if (!this.playing) this.ctrl.resume(); }
     },
     step(k) {
       const i = this.id ? byId.get(this.id).n - 1 : -1;
@@ -436,7 +440,7 @@
       return Math.min(1, ms / (this.preview ? byId.get(this.id).spotify_ms : this.dur));
     },
     spotifyLoad(d, frac) {
-      const startAt = frac && !this.preview ? Math.floor(frac * d.spotify_ms / 1000) : 0;
+      const startAt = frac && !this.preview ? Math.floor(spotifySeekSec(d, frac)) : 0;
       d3.select("#p-embed").attr("hidden", null);
       if (this.ctrl) { this.ctrl.loadUri("spotify:track:" + d.spotify_id, false, startAt); this.ctrl.play(); return; }
       if (this.creating) return;
@@ -476,6 +480,21 @@
   audio.addEventListener("pause", () => { player.playing = false; updatePlayerUI(); });
   audio.addEventListener("ended", () => player.next());
 
+  // La master de 2019 que sirve Spotify dura un poco más que el CD de 1993 con el que se midió el vúmetro.
+  // Ese margen va al principio: si no se resta, el dibujo se adelanta a lo que se oye.
+  function spotifyLead(d) {
+    return Math.max(0, d.spotify_ms / 1000 - d.mp3_seconds);
+  }
+  function spotifySeekSec(d, frac) {
+    return frac * d.mp3_seconds + spotifyLead(d);
+  }
+  function heardSeconds(d) {
+    if (!d) return 0;
+    if (player.source === "local") return audio.currentTime || 0;
+    if (!player.dur) return (player.frac || 0) * d.mp3_seconds;
+    const ms = player.frac * player.dur + (player.playing ? performance.now() - player.stamp : 0);
+    return Math.max(0, Math.min(d.mp3_seconds, ms / 1000 - spotifyLead(d)));
+  }
   function updatePlayerUI() {
     const t = T(), cur = player.id ? byId.get(player.id) : null;
     d3.select("#player").attr("hidden", cur ? null : "");
@@ -530,11 +549,12 @@
   function drawVu(now) {
     if (!vu) return;
     const d = byId.get(vu.id), g = ridges.filter(r => r.id === vu.id);
-    const frac = player.position(), B = VU.bands, x0 = xStart(d), zw = zoneW(d), y0 = base(d);
+    const sec = heardSeconds(d), frac = d.mp3_seconds ? sec / d.mp3_seconds : 0;
+    const B = VU.bands, x0 = xStart(d), zw = zoneW(d), y0 = base(d);
     const dt = vu.last ? Math.min(100, now - vu.last) : 16; vu.last = now;
     const k60 = dt / 16.7;                  // pasos de 60 fps, para que la caída no dependa de la pantalla
     if (vu.frames && player.playing) {
-      const nf = vu.frames.length / B, pos = Math.max(0, Math.min(nf - 1.001, frac * d.mp3_seconds * VU.fps));
+      const nf = vu.frames.length / B, pos = Math.max(0, Math.min(nf - 1.001, sec * VU.fps));
       const i = Math.floor(pos), k = pos - i;
       for (let b = 0; b < B; b++) {
         const v = ((1 - k) * vu.frames[i * B + b] + k * vu.frames[(i + 1) * B + b]) / 255;
@@ -879,7 +899,7 @@
     renderCover();
     document.documentElement.lang = state.lang;
     document.title = t.pageTitle;
-    d3.select("#viz-title").text(t.vizTitle);
+    d3.select("#viz-title").text(state.view === "songs" ? t.vizTitle : t.pulsarLabel);
     d3.selectAll(".lang button").attr("aria-pressed", function () { return this.dataset.lang === state.lang; });
     ridges.select(".hit").attr("aria-label", d => `${d.n}. ${d.title}. ${t.sideName[d.side]} (${t.sides[d.side]}). ${mmss(d.mp3_seconds)}`);
     renderLabels(); renderControls(); updateFeature(); renderSteps(); renderEnd();
