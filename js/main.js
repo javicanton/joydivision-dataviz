@@ -860,7 +860,7 @@
     const c = T().cover;
     syncPulseLabel();
     d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
-    d3.select("#c-byline").text(c.byline); d3.select("#cover-caption").text(c.caption);
+    d3.select("#c-byline").text(c.byline); d3.select("#c-thanks").html(c.thanks); d3.select("#cover-caption").text(c.caption);
   }
 
   function renderAll() {
