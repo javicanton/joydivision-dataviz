@@ -137,7 +137,8 @@
       `<button type="button" data-m="${m}" aria-pressed="${state.metric === m}" title="${t.metrics[m][1]}">${t.metrics[m][0]}</button>`).join(""));
     d3.select("#mode").html(["equal", "real"].map(m =>
       `<button type="button" data-mode="${m}" aria-pressed="${state.mode === m}">${t.modes[m]}</button>`).join(""));
-    d3.select("#feature").attr("aria-label", t.featureNone).html(`<span class="lbl">${t.featureLabel}</span>` +
+    d3.select("#feature-label").text(t.featureLabel);
+    d3.select("#feature").attr("aria-label", t.featureNone).html(
       FEATURES.map(f => `<button type="button" data-f="${f}" aria-pressed="${state.feature === f}">${t.features[f]}</button>`).join(""));
     d3.selectAll("#feature button").on("click", function () {
       setChart({ feature: state.feature === this.dataset.f ? null : this.dataset.f });

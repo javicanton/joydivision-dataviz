@@ -69,10 +69,10 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 .fig { position: sticky; top: 0; height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: center; }
 #viz { display: block; width: 100%; height: auto; max-height: calc(100vh - 140px); overflow: visible; }
 figcaption { margin-top: 10px; }
-.controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; }
 .seg { display: flex; border: 1px solid var(--faint); }
 .seg-f { flex-wrap: wrap; justify-content: center; }
-.seg-f .lbl { color: var(--dim); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; padding: 6px 8px; border-right: 1px solid var(--faint); }
+.feature-label { color: var(--dim); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
 .controls + .controls { margin-top: 8px; }
 .ridge .fbar { stroke: var(--fg); stroke-width: 3; }
 .caption { min-height: 2.8em; margin: 12px auto 0; max-width: 560px; text-align: center; font-size: 12px; line-height: 1.5; letter-spacing: .04em; color: var(--dim); }
