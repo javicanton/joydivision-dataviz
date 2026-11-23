@@ -52,8 +52,8 @@ window.I18N = {
     reccobeats: "ReccoBeats",
     cover: {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
-      title: "<i>Unknown Pleasures</i>, una visualización que también se oye",
-      dek: "Muchos amantes de la visualización de datos saben que la portada del primer disco de Joy Division es un gráfico con datos, pero pocos conocen la intrahistoria. Aquí cuento y construyo una visualización para oír y ver este disco.",
+      title: "<i>Unknown Pleasures</i>: oír visualizaciones",
+      dek: "La portada del legendario primer disco de Joy Division es un gráfico científico real, publicado algunos años antes, pero pocos conocen la verdadera historia.",
       byline: "Javi Cantón-Correa · 17 de noviembre de 2026",
       caption: "80 pulsos de CP 1919, a partir de una versión digitalizada del gráfico de Harold D. Craft Jr. (Arecibo, 1970), el que acabó en la portada de Unknown Pleasures (Peter Saville, Factory, 1979). Pasa el puntero o el dedo por una línea para ver su intensidad."
     },
@@ -173,8 +173,8 @@ window.I18N = {
     reccobeats: "ReccoBeats",
     cover: {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
-      title: "<i>Unknown Pleasures</i>, a visualisation that can also be heard",
-      dek: "Many people who love data visualisation know that the cover of Joy Division's first album is a chart made of data, but few know the story behind it. Here I tell that story and build a visualisation to hear and see this album.",
+      title: "<i>Unknown Pleasures</i>: hear visualizations",
+      dek: "The cover of Joy Division's legendary debut album is a real scientific chart, published some years earlier, but few know the true story.",
       byline: "Javi Cantón-Correa · 17 November 2026",
       caption: "80 pulses of CP 1919, from a digitised version of Harold D. Craft Jr.'s chart (Arecibo, 1970), the one that ended up on the cover of Unknown Pleasures (Peter Saville, Factory, 1979). Move a pointer or a finger along a line to read its intensity."
     },
@@ -253,6 +253,6 @@ window.I18N = {
       <p><b>Attributes.</b> Spotify closed developer access to its audio features in November 2024. The ones on this page (energy, valence, instrumentalness...) come from ReccoBeats, which uses the same names and scale with its own analysis, for the 2019 Digital Master edition.</p>
       <p><b>Playback.</b> Spotify (full songs when logged in) or, locally, the album's MP3s.</p>`,
     sources: null,   // se usan las de español
-    credits: `Joy Division: Ian Curtis, Bernard Sumner, Peter Hook, Stephen Morris. <i>Unknown Pleasures</i>, Factory Records (FACT 10), 1979. Produced by Martin Hannett. Visualisation and text: Javi Cantón-Correa · <a href="https://javiercanton.com" target="_blank" rel="noopener">javiercanton.com</a>`
+    credits: `Joy Division: Ian Curtis, Bernard Sumner, Peter Hook, Stephen Morris. <i>Unknown Pleasures</i>, Factory Records (FACT 10), 1979. Produced by Martin Hannett. Visualization and text: Javi Cantón-Correa · <a href="https://javiercanton.com" target="_blank" rel="noopener">javiercanton.com</a>`
   }
 };
