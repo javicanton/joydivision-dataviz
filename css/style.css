@@ -101,9 +101,9 @@ figcaption { margin-top: 10px; }
 .ridge .fill { fill: var(--bg); }
 .ridge .line { fill: none; stroke: var(--fg); stroke-width: 1.3; stroke-linejoin: round; transition: opacity .35s; }
 .ridge path, .ridge line, .ridge text { pointer-events: none; }
-.ridge .hit { pointer-events: all; }
+.ridge .hit { fill: transparent; pointer-events: none; }
 .ridge .peak { fill: none; stroke: var(--dim); stroke-width: 1; stroke-dasharray: 1.5 2.5; }
-.ridge .hit { fill: transparent; cursor: pointer; }
+#viz.is-songs .ridge .hit { pointer-events: all; cursor: pointer; }
 .ridge .hit:focus { outline: none; }
 .ridge text { fill: var(--dim); font-size: 11px; letter-spacing: .12em; transition: fill .3s, opacity .3s; }
 .ridge .num { font-variant-numeric: tabular-nums; }
