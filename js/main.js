@@ -571,11 +571,13 @@
   // ---------- Reportaje ----------
   function renderSteps() {
     const t = T();
-    d3.select("#steps").selectAll(".step").data(STEPS, s => s.id).join(enter => {
+    const steps = d3.select("#steps").selectAll(".step").data(STEPS, s => s.id).join(enter => {
       const s = enter.append("section").attr("class", "step").attr("data-step", s => s.id);
       s.append("div").attr("class", "card");
       return s;
-    }).select(".card").html(s => t.steps[s.id]);
+    });
+    steps.attr("id", s => s.id === "listen" ? "reproductor" : null);
+    steps.select(".card").html(s => t.steps[s.id]);
     d3.selectAll("[data-action=album]").on("click", () => player.toggle());
     d3.select("#source-note").text(player.source === "local" ? t.sourceLocal : t.spotifyNote);
     if (state.step) d3.selectAll(".step").classed("active", s => s.id === state.step);
@@ -860,6 +862,15 @@
     const c = T().cover;
     syncPulseLabel();
     d3.select("#c-kicker").html(c.kicker); d3.select("#c-title").html(c.title); d3.select("#c-dek").text(c.dek);
+    d3.select("#c-disclaimer").html(c.disclaimer);
+    d3.select("#c-disclaimer a").on("click", (ev) => {
+      ev.preventDefault();
+      const step = document.getElementById("reproductor");
+      if (!step) return;
+      const top = step.getBoundingClientRect().top + scrollY - (NARROW ? Math.round(innerHeight * 0.42) : 72);
+      history.replaceState(null, "", "#reproductor");
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    });
     d3.select("#c-byline").text(c.byline); d3.select("#c-thanks").html(c.thanks); d3.select("#cover-caption").text(c.caption);
   }
 

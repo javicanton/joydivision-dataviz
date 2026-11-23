@@ -52,6 +52,8 @@ button:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
 .cover .kicker { font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--dim); margin: 0 0 16px; }
 .cover h1 { font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.1; letter-spacing: .02em; margin: 0 0 18px; }
 .cover .dek { font-family: var(--serif); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.55; color: #d4d4d4; margin: 0 0 18px; }
+.cover .disclaimer { font-size: 13px; line-height: 1.45; color: var(--dim); margin: 0 0 18px; }
+.cover .disclaimer a { color: var(--fg); }
 .cover .byline { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin: 0 0 12px; }
 .cover .thanks { font-family: var(--serif); font-size: 15.5px; line-height: 1.5; color: #d4d4d4; margin: 0 0 14px; }
 .cover .c-caption { font-size: 11.5px; line-height: 1.5; color: var(--dim); margin: 0; }
