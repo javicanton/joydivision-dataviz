@@ -54,6 +54,7 @@ window.I18N = {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
       title: "<i>Unknown Pleasures</i>: oír visualizaciones",
       dek: "La portada del legendario primer disco de Joy Division es un gráfico científico real, publicado algunos años antes, pero pocos conocen la verdadera historia.",
+      disclaimer: `Este reportaje se lee mejor en desktop. En el móvil puedes ir directamente al <a href="#reproductor">reproductor</a>.`,
       byline: "Javi Cantón-Correa · 23 de noviembre de 2026",
       thanks: `Gracias especiales a <a href="https://www.jenchristiansen.com/" target="_blank" rel="noopener">Jen Christiansen</a>. Cedió las imágenes de su artículo original y corrigió el texto con una generosidad enorme. Esta página se apoya en las dos cosas.`,
       caption: "80 pulsos de CP 1919, a partir de una versión digitalizada del gráfico de Harold D. Craft Jr. (Arecibo, 1970), el que acabó en la portada de Unknown Pleasures (Peter Saville, Factory, 1979). Pasa el puntero o el dedo por una línea para ver su intensidad."
@@ -176,6 +177,7 @@ window.I18N = {
       kicker: "Joy Division · <i>Unknown Pleasures</i> (1979)",
       title: "<i>Unknown Pleasures</i>: hear visualizations",
       dek: "The cover of Joy Division's legendary debut album is a real scientific chart, published some years earlier, but few know the true story.",
+      disclaimer: `This story reads better on desktop. On a phone you can go straight to the <a href="#reproductor">player</a>.`,
       byline: "Javi Cantón-Correa · 23 November 2026",
       thanks: `Special thanks to <a href="https://www.jenchristiansen.com/" target="_blank" rel="noopener">Jen Christiansen</a>. She let us use the images from her original article and corrected the text with great generosity. This page rests on both.`,
       caption: "80 pulses of CP 1919, from a digitised version of Harold D. Craft Jr.'s chart (Arecibo, 1970), the one that ended up on the cover of Unknown Pleasures (Peter Saville, Factory, 1979). Move a pointer or a finger along a line to read its intensity."
