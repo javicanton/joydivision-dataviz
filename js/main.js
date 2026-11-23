@@ -570,6 +570,32 @@
     d3.select("#source-note").text(player.source === "local" ? t.sourceLocal : t.spotifyNote);
     if (state.step) d3.selectAll(".step").classed("active", s => s.id === state.step);
     updatePlayerUI();
+    syncStage();
+  }
+  // Al llegar al último paso el gráfico pasa al centro y se usa como reproductor.
+  // Cuando el método y las fuentes entran en pantalla, se retira para no taparlos.
+  let endOn = false;
+  function syncStage() {
+    const scrolly = document.querySelector(".scrolly");
+    const on = state.step === "listen" && !endOn;
+    scrolly.classList.toggle("stage", on);
+    scrolly.classList.toggle("yield", state.step === "listen" && endOn);
+    if (!on) { scrolly.classList.remove("stage-tight"); return; }
+    const card = scrolly.querySelector('.step[data-step="listen"] .card');
+    const cap = scrolly.querySelector("figcaption");
+    const player = document.getElementById("player");
+    const playerH = player && !player.hidden ? Math.ceil(player.getBoundingClientRect().height + 28) : 16;
+    const fit = () => {
+      const top = Math.ceil(card.getBoundingClientRect().bottom + 8);
+      const capH = Math.ceil((cap ? cap.getBoundingClientRect().height : 120) + 8);
+      scrolly.style.setProperty("--stage-top", top + "px");
+      scrolly.style.setProperty("--stage-pad", playerH + "px");
+      scrolly.style.setProperty("--stage-bot", capH + "px");
+      return innerHeight - top - playerH - capH;
+    };
+    if (!NARROW) scrolly.classList.remove("stage-tight");
+    if (NARROW || (card && fit() < 300)) scrolly.classList.add("stage-tight");
+    if (card) fit();
   }
   function applyStep(id) {
     if (state.step === id) return;
@@ -577,6 +603,7 @@
     d3.selectAll(".step").classed("active", s => s.id === id);
     const s = STEPS.find(x => x.id === id);
     setChart({ metric: s.metric, mode: s.mode, focus: s.focus || [], feature: s.feature || null, view: s.view || "songs" });
+    syncStage();
   }
   function observeSteps() {
     const io = new IntersectionObserver(entries => {
@@ -587,6 +614,17 @@
       });
     }, { rootMargin: NARROW ? "-60% 0px -30% 0px" : "-45% 0px -45% 0px" });
     document.querySelectorAll(".step").forEach(el => io.observe(el));
+    // El gráfico se aparta cuando el método entra en la mitad alta de la pantalla.
+    const readEnd = () => {
+      const top = document.querySelector(".end").getBoundingClientRect().top;
+      const next = top < innerHeight * 0.45;
+      if (next === endOn) return;
+      endOn = next;
+      syncStage();
+    };
+    window.addEventListener("scroll", readEnd, { passive: true });
+    readEnd();
+    new ResizeObserver(() => syncStage()).observe(document.getElementById("player"));
   }
 
   function renderEnd() {
